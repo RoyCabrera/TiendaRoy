@@ -1,87 +1,110 @@
 <!doctype html>
 <html lang="es">
+
 <head>
-    <meta charset="utf-8" />
-    <link rel="apple-touch-icon" sizes="76x76" href="../assets/img/apple-icon.png">
-    <link rel="icon" type="image/png" href="../assets/img/favicon.png">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-
-    <title>Sign Up Page - Material Kit by Creative Tim</title>
-
-    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
-
-    <!--     Fonts and icons     -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
-    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" />
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" />
-
-    <!-- CSS Files -->
-    <link href="{{asset('css/bootstrap.min.css')}}" rel="stylesheet" />
-    <link href="{{asset('css/material-kit.css')}}" rel="stylesheet"/>
-
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no' name='viewport'/>
+  <title>
+    Tienda con Laravel
+  </title>
+  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:400,700|Material+Icons"/>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css">
+  <link rel="stylesheet" href="{{asset('css/material-kit.css')}}" />
+  <link rel="stylesheet" href="{{asset('css/demo.css')}}">
 </head>
 
 <body class="@yield('body-class')">
-    <nav class="navbar navbar-transparent navbar-absolute">
+  <nav class="navbar navbar-transparent navbar-color-on-scroll fixed-top navbar-expand-lg" color-on-scroll="100" id="sectionsNav">
     <div class="container">
-        <!-- Brand and toggle get grouped for better mobile display -->
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navigation-example">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="http://www.creative-tim.com">Roy Cabrera Ayala</a>
-        </div>
+      <div class="navbar-translate">
+        <a class="navbar-brand" href="{{ url('/') }}">
+          Roy Cabrera
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="navbar-toggler-icon"></span>
+          <span class="navbar-toggler-icon"></span>
+          <span class="navbar-toggler-icon"></span>
+        </button>
+      </div>
+      <div class="collapse navbar-collapse">
+        <ul class="navbar-nav ml-auto">
+          @guest
+          <li class="nav-item">
+            <a class="nav-link" href="{{ route('login') }}">
+              Ingresar
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ route('register') }}">
+              Registrar
+            </a>
+          </li>
+          @else
+          <li class="nav-item dropdown">
 
-        <div class="collapse navbar-collapse" id="navigation-example">
-            <ul class="nav navbar-nav navbar-right">
-                <li>
-                    <a href="../components-documentation.html" target="_blank">
-                            Componentes
-                    </a>
-                </li>
-                <li>
-                    <a href="http://demos.creative-tim.com/material-kit-pro/presentation.html?ref=utp-freebie" target="_blank">
-                        <i class="material-icons">unarchive</i> Actualizar
-                    </a>
-                </li>
-                <li>
-                    <a href="https://twitter.com/CreativeTim" target="_blank" class="btn btn-simple btn-white btn-just-icon">
-                        <i class="fa fa-twitter"></i>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://www.facebook.com/CreativeTim" target="_blank" class="btn btn-simple btn-white btn-just-icon">
-                        <i class="fa fa-facebook-square"></i>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://www.instagram.com/CreativeTimOfficial" target="_blank" class="btn btn-simple btn-white btn-just-icon">
-                        <i class="fa fa-instagram"></i>
-                    </a>
-                </li>
-            </ul>
-        </div>
+            <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true"
+              aria-expanded="false" v-pre>
+              {{ Auth::user()->name }}
+              <span class="caret"></span>
+            </a>
+
+            <div class="dropdown-menu dropdown-menu-right danger" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault();document.getElementById('logout-form').submit();">
+                Salir
+              </a>
+              <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                @csrf
+              </form>
+            </div>
+          </li>
+          @endguest
+        </ul>
+      </div>
     </div>
-</nav>
+  </nav>
 
-        <div class="wrapper">
+  @yield('content')
 
-            @yield('content')
-
-        </div>
-
-
+ <footer class="footer">
+      <div class="container">
+        <nav class="float-left">
+          <ul>
+            <li>
+              <a href="#">
+                Roy Cabrera Ayala
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                Acerca de
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                Blog
+              </a>
+            </li>
+            <li>
+              <a href="#">Facebook</a>
+            </li>
+          </ul>
+        </nav>
+      
+      </div>
+    </footer>  
+ 
 </body>
 
-<script src="{{asset('/js/jquery.min.js')}}" type="text/javascript"></script>
-<script src="{{asset('/js/bootstrap.min.js')}}" type="text/javascript"></script>
-<script src="{{asset('/js/material.min.js')}}"></script>
-<script src="{{asset('/js/nouislider.min.js')}}" type="text/javascript"></script>
-<script src="{{asset('/js/bootstrap-datepicker.js')}}" type="text/javascript"></script>
-<script src="{{asset('/js/material-kit.js')}}" type="text/javascript"></script>
+<script src="{{asset('/js/core/jquery.min.js')}}" type="text/javascript"></script>
+<script src="{{asset('/js/core/popper.min.js')}}" type="text/javascript"></script>
+<script src="{{asset('/js/core/bootstrap-material-design.min.js')}}"></script>
+<script src="{{asset('/js/plugins/moment.min.js')}}" type="text/javascript"></script>
+<script src="{{asset('/js/plugins/bootstrap-datetimepicker.js')}}" type="text/javascript"></script>
+<script src="{{asset('/js/plugins/nouislider.min.js')}}" type="text/javascript"></script>
+<script src="{{asset('/js/plugins/jquery.sharrre.js')}}" type="text/javascript"></script>
+<script src="{{asset('/js/material-kit.js?v=2.0.4')}}" type="text/javascript"></script>
+
 
 </html>
-

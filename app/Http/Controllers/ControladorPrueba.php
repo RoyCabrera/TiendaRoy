@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Product;
 use Illuminate\Http\Request;
 
 class ControladorPrueba extends Controller
@@ -9,12 +10,13 @@ class ControladorPrueba extends Controller
 
     public function bienvenido()
     {
-        return view('welcome');
+        $products=Product::all();
+        return view('welcome')->with(compact('products'));
     }
 
     public function adios()
     {
-        return view('adios');
+        return "hola que tal como te va adios";
     }
 
 }
