@@ -10,7 +10,8 @@ class ControladorPrueba extends Controller
 
     public function bienvenido()
     {
-        $products=Product::all();
+        $products=Product::paginate(15);
+
         return view('welcome')->with(compact('products'));
     }
 

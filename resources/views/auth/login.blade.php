@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('title','Ingresar')
 @section('body-class','signup-page')
 @section('content')
     <div class="page-header header-filter" style="background-image: url('{{asset('img/bg7.jpg')}}'); 
@@ -91,6 +92,7 @@
                 </div>
             </div>
         </div>
-
+        @include('includes.footer')
+    </div>
 
 @endsection

@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('title','Registrarse')
 @section('body-class','signup-page')
 @section('content')
 <div class="page-header header-filter"  style="background-image: url('{{asset('img/bg3.jpg')}}'); 
@@ -114,4 +115,7 @@ background-size: cover; background-position: top center;">
                 </div>
             </div>
         </div>
+    @include('includes.footer')
+</div>
+
 @endsection

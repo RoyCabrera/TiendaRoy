@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
   <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no' name='viewport'/>
   <title>
-    Tienda con Laravel
+    @yield('title','Bienvenido a TiendaPedidos')
   </title>
   <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:400,700|Material+Icons"/>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css">
@@ -51,12 +51,18 @@
             </a>
 
             <div class="dropdown-menu dropdown-menu-right danger" aria-labelledby="navbarDropdown">
+                @if(auth()->user()->admin)
+                <a class="dropdown-item" href="{{ url('/admin/products') }}">
+                    Gestionar Prodcutos
+                </a>
+                @endif
               <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault();document.getElementById('logout-form').submit();">
                 Salir
               </a>
               <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                 @csrf
               </form>
+
             </div>
           </li>
           @endguest
@@ -67,33 +73,7 @@
 
   @yield('content')
 
- <footer class="footer">
-      <div class="container">
-        <nav class="float-left">
-          <ul>
-            <li>
-              <a href="#">
-                Roy Cabrera Ayala
-              </a>
-            </li>
-            <li>
-              <a href="#">
-                Acerca de
-              </a>
-            </li>
-            <li>
-              <a href="#">
-                Blog
-              </a>
-            </li>
-            <li>
-              <a href="#">Facebook</a>
-            </li>
-          </ul>
-        </nav>
-      
-      </div>
-    </footer>  
+
  
 </body>
 
