@@ -77,14 +77,8 @@
  
 </body>
 
-<script src="{{asset('/js/core/jquery.min.js')}}" type="text/javascript"></script>
-<script src="{{asset('/js/core/popper.min.js')}}" type="text/javascript"></script>
-<script src="{{asset('/js/core/bootstrap-material-design.min.js')}}"></script>
-<script src="{{asset('/js/plugins/moment.min.js')}}" type="text/javascript"></script>
-<script src="{{asset('/js/plugins/bootstrap-datetimepicker.js')}}" type="text/javascript"></script>
-<script src="{{asset('/js/plugins/nouislider.min.js')}}" type="text/javascript"></script>
-<script src="{{asset('/js/plugins/jquery.sharrre.js')}}" type="text/javascript"></script>
-<script src="{{asset('/js/material-kit.js?v=2.0.4')}}" type="text/javascript"></script>
 
+
+<script src="{{ asset('js/app.js') }}"></script>
 
 </html>

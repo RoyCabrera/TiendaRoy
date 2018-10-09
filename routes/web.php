@@ -29,5 +29,6 @@ Route::middleware(['auth','admin'])->prefix('admin')->group(function ()
     
 
 });
+Route::get('test/prueba','ControladorPrueba@prueba');
 
 

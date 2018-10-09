@@ -19,5 +19,9 @@ class ControladorPrueba extends Controller
     {
         return "hola que tal como te va adios";
     }
+    public function prueba()
+    {
+        return view('test.prueba');
+    }
 
 }
