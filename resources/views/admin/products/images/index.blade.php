@@ -98,7 +98,7 @@
                         <div class="col-md-4">
                             <div class="card-deck">
                                 <div class="card">
-                                    <img class="card-img-top" src="{{$image->url}}" alt="Card image cap"  height="250px">
+                                    <img class="card-img-top" src="{{$image->url}}" alt="Card image cap"  height="320px">
                                     <form method="post" action="">
                                         @csrf
                                         @method('DELETE')

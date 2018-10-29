@@ -8,10 +8,17 @@
   </div>
   <div class="main main-raised">
     <div class="container">
-      <div class="section">
+      <br>
         <h2 class="title text-center">Listado de Productos</h2>
+        <p class="text-right">
+          <span id="products-total">{{$products->total()}}</span> Registros | Pagina
+          {{$products->currentPage()}} de
+          {{$products->lastPage()}}
+        </p>
+        {{--<div id="alert" class=" alert alert-success"></div>--}}
         <div class="team">
           <div class="row">
+
            <div class="">
 
              <a href="{{url('admin/products/create')}}" class="btn btn-rose btn-round"><i class="material-icons">
@@ -19,7 +26,7 @@
                </i>Nuevo Producto</a>
            </div>
             <br><br><br>
-            <table class="table  table-responsive table-bordered">
+            <table class="table  table-responsive table-borderless table-hover">
               <thead>
               <tr>
                 <th class="text-md-center">#</th>
@@ -54,8 +61,7 @@
                        data-placement="top" title="Imagenes del Producto"><i class="material-icons">
                         image
                       </i></a>
-                    <button type="submit"  class="btn btn-danger" data-toggle="tooltip"
-                            data-placement="top" title="Eliminar Producto"><i class="material-icons">
+                    <button type="submit"  class="btn btn-danger btn-delete"><i class="material-icons">
                         delete
                       </i></button>
                   </div>
@@ -71,7 +77,7 @@
             {{$products->links()}}
           </div>
         </div>
-      </div>
+
     </div>
   </div>
 @include('includes.footer')

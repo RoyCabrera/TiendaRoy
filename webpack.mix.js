@@ -16,12 +16,17 @@ mix.scripts([
     'resources/assets/js/axios.js',
     'resources/assets/js/app.js',
     'resources/assets/js/core/jquery.min.js',
+    'resources/assets/js/plugins/jquery.sharrre.js',
+    'resources/assets/js/toastr.js',
     'resources/assets/js/core/popper.min.js',
     'resources/assets/js/core/bootstrap-material-design.min.js',
     'resources/assets/js/plugins/moment.min.js',
     'resources/assets/js/plugins/bootstrap-datetimepicker.js',
     'resources/assets/js/plugins/nouislider.min.js',
-    'resources/assets/js/plugins/jquery.sharrre.js',
-    'resources/assets/js/material-kit.js'
+    'resources/assets/js/material-kit.js',
+    'resources/assets/js/script.js'
 
-    ], 'public/js/app.js');
+    ], 'public/js/app.js')
+    .styles([
+     'resources/assets/css/toastr.css'
+    ],'public/css/app.css');

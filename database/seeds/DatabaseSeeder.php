@@ -13,7 +13,7 @@ class DatabaseSeeder extends Seeder
     {
         //esta function llama los seeders creados para generar datos normales o ficiticios
 
-        $this->call(UsersTableSeeder::class);
+        //$this->call(UsersTableSeeder::class);
         $this->call(ProductsTableSeeder::class);
     }
 }

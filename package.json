@@ -20,6 +20,7 @@
         "vue": "^2.5.7"
     },
     "dependencies": {
+        "izitoast": "^1.4.0",
         "node": "^10.11.0"
     }
 }

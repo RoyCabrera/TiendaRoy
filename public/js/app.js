@@ -12605,23 +12605,57 @@ return /******/ (function(modules) { // webpackBootstrap
 });
 ;
 //# sourceMappingURL=axios.map
-//var urlUsers = 'https://randomuser.me/api/?results=10';
-var urlUsers = 'https://jsonplaceholder.typicode.com/users';
+
 new Vue({
-    el: '#main',
-    created: function() {
-        this.getUsers();
+
+    el:'#crud',
+    created:function()
+    {
+        this.getProducts();
     },
     data: {
-        lists: []
+
+        pro:[]
+
     },
-    methods: {
-        getUsers: function() {
-            axios.get(urlUsers).then(response => {
-                this.lists = response.data
+    methods:{
+
+        getProducts:function () {
+            var urlproductos='test/data';
+            axios.get(urlproductos).then(response =>{
+                this.pro=response.data
+            });
+        },
+        deleteProducts:function (pr) {
+            //alert(pr.id);
+            var url='test/data/'+ pr.id;
+            axios.delete(url).then(response =>{//eliminar
+               this.getProducts();//listar
+
+                toastr.options = {//opciones de Toastr js
+                    "closeButton": true,
+                    "debug": false,
+                    "newestOnTop": false,
+                    "progressBar": true,
+                    "positionClass": "toast-bottom-right",
+                    "preventDuplicates": false,
+                    "onclick": null,
+                    "showDuration": "300",
+                    "hideDuration": "1000",
+                    "timeOut": "5000",
+                    "extendedTimeOut": "1000",
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
+                }
+               toastr.success('Eliminado correctamente '+pr.name);//mensaje
+
+
             });
         }
     }
+
 });
 /*! jQuery v3.2.1 | (c) JS Foundation and other contributors | jquery.org/license */ ! function(a, b) {
     "use strict";
@@ -15863,6 +15897,1102 @@ new Vue({
         return a.$ === r && (a.$ = Wb), b && a.jQuery === r && (a.jQuery = Vb), r
     }, b || (a.jQuery = a.$ = r), r
 });
+/*!
+ *  Sharrre.com - Make your sharing widget!
+ *  Version: beta 1.3.5
+ *  Author: Julien Hany
+ *  License: MIT http://en.wikipedia.org/wiki/MIT_License or GPLv2 http://en.wikipedia.org/wiki/GNU_General_Public_License
+ */
+
+;
+(function($, window, document, undefined) {
+
+  /* Defaults
+  ================================================== */
+  var pluginName = 'sharrre',
+    defaults = {
+      className: 'sharrre',
+      share: {
+        googlePlus: false,
+        facebook: false,
+        twitter: false,
+        digg: false,
+        delicious: false,
+        stumbleupon: false,
+        linkedin: false,
+        pinterest: false
+      },
+      shareTotal: 0,
+      template: '',
+      title: '',
+      url: document.location.href,
+      text: document.title,
+      urlCurl: 'sharrre.php', //PHP script for google plus...
+      count: {}, //counter by social network
+      total: 0, //total of sharing
+      shorterTotal: true, //show total by k or M when number is to big
+      enableHover: true, //disable if you want to personalize hover event with callback
+      enableCounter: true, //disable if you just want use buttons
+      enableTracking: false, //tracking with google analitycs
+      hover: function() {}, //personalize hover event with this callback function
+      hide: function() {}, //personalize hide event with this callback function
+      click: function() {}, //personalize click event with this callback function
+      render: function() {}, //personalize render event with this callback function
+      buttons: { //settings for buttons
+        googlePlus: { //http://www.google.com/webmasters/+1/button/
+          url: '', //if you need to personnalize button url
+          urlCount: false, //if you want to use personnalize button url on global counter
+          size: 'medium',
+          lang: 'en-US',
+          annotation: ''
+        },
+        facebook: { //http://developers.facebook.com/docs/reference/plugins/like/
+          url: '', //if you need to personalize url button
+          urlCount: false, //if you want to use personnalize button url on global counter
+          action: 'like',
+          layout: 'button_count',
+          width: '',
+          send: 'false',
+          faces: 'false',
+          colorscheme: '',
+          font: '',
+          lang: 'en_US'
+        },
+        twitter: { //http://twitter.com/about/resources/tweetbutton
+          url: '', //if you need to personalize url button
+          urlCount: false, //if you want to use personnalize button url on global counter
+          count: 'horizontal',
+          hashtags: '',
+          via: '',
+          related: '',
+          lang: 'en'
+        },
+        digg: { //http://about.digg.com/downloads/button/smart
+          url: '', //if you need to personalize url button
+          urlCount: false, //if you want to use personnalize button url on global counter
+          type: 'DiggCompact'
+        },
+        delicious: {
+          url: '', //if you need to personalize url button
+          urlCount: false, //if you want to use personnalize button url on global counter
+          size: 'medium' //medium or tall
+        },
+        stumbleupon: { //http://www.stumbleupon.com/badges/
+          url: '', //if you need to personalize url button
+          urlCount: false, //if you want to use personnalize button url on global counter
+          layout: '1'
+        },
+        linkedin: { //http://developer.linkedin.com/plugins/share-button
+          url: '', //if you need to personalize url button
+          urlCount: false, //if you want to use personnalize button url on global counter
+          counter: ''
+        },
+        pinterest: { //http://pinterest.com/about/goodies/
+          url: '', //if you need to personalize url button
+          media: '',
+          description: '',
+          layout: 'horizontal'
+        }
+      }
+    },
+    /* Json URL to get count number
+    ================================================== */
+    urlJson = {
+      googlePlus: "",
+
+      //new FQL method by Sire
+      facebook: "https://graph.facebook.com/fql?q=SELECT%20url,%20normalized_url,%20share_count,%20like_count,%20comment_count,%20total_count,commentsbox_count,%20comments_fbid,%20click_count%20FROM%20link_stat%20WHERE%20url=%27{url}%27&callback=?",
+      //old method facebook: "http://graph.facebook.com/?id={url}&callback=?",
+      //facebook : "http://api.ak.facebook.com/restserver.php?v=1.0&method=links.getStats&urls={url}&format=json"
+
+      twitter: "http://cdn.api.twitter.com/1/urls/count.json?url={url}&callback=?",
+      digg: "http://services.digg.com/2.0/story.getInfo?links={url}&type=javascript&callback=?",
+      delicious: 'http://feeds.delicious.com/v2/json/urlinfo/data?url={url}&callback=?',
+      //stumbleupon: "http://www.stumbleupon.com/services/1.01/badge.getinfo?url={url}&format=jsonp&callback=?",
+      stumbleupon: "",
+      linkedin: "http://www.linkedin.com/countserv/count/share?format=jsonp&url={url}&callback=?",
+      pinterest: "http://api.pinterest.com/v1/urls/count.json?url={url}&callback=?"
+    },
+    /* Load share buttons asynchronously
+    ================================================== */
+    loadButton = {
+      googlePlus: function(self) {
+        var sett = self.options.buttons.googlePlus;
+        //$(self.element).find('.buttons').append('<div class="button googleplus"><g:plusone size="'+self.options.buttons.googlePlus.size+'" href="'+self.options.url+'"></g:plusone></div>');
+        $(self.element).find('.buttons').append('<div class="button googleplus"><div class="g-plusone" data-size="' + sett.size + '" data-href="' + (sett.url !== '' ? sett.url : self.options.url) + '" data-annotation="' + sett.annotation + '"></div></div>');
+        window.___gcfg = {
+          lang: self.options.buttons.googlePlus.lang
+        };
+        var loading = 0;
+        if (typeof gapi === 'undefined' && loading == 0) {
+          loading = 1;
+          (function() {
+            var po = document.createElement('script');
+            po.type = 'text/javascript';
+            po.async = true;
+            po.src = '//apis.google.com/js/plusone.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(po, s);
+          })();
+        } else {
+          gapi.plusone.go();
+        }
+      },
+      facebook: function(self) {
+        var sett = self.options.buttons.facebook;
+        $(self.element).find('.buttons').append('<div class="button facebook"><div id="fb-root"></div><div class="fb-like" data-href="' + (sett.url !== '' ? sett.url : self.options.url) + '" data-send="' + sett.send + '" data-layout="' + sett.layout + '" data-width="' + sett.width + '" data-show-faces="' + sett.faces + '" data-action="' + sett.action + '" data-colorscheme="' + sett.colorscheme + '" data-font="' + sett.font + '" data-via="' + sett.via + '"></div></div>');
+        var loading = 0;
+        if (typeof FB === 'undefined' && loading == 0) {
+          loading = 1;
+          (function(d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) {
+              return;
+            }
+            js = d.createElement(s);
+            js.id = id;
+            js.src = '//connect.facebook.net/' + sett.lang + '/all.js#xfbml=1';
+            fjs.parentNode.insertBefore(js, fjs);
+          }(document, 'script', 'facebook-jssdk'));
+        } else {
+          FB.XFBML.parse();
+        }
+      },
+      twitter: function(self) {
+        var sett = self.options.buttons.twitter;
+        $(self.element).find('.buttons').append('<div class="button twitter"><a href="https://twitter.com/share" class="twitter-share-button" data-url="' + (sett.url !== '' ? sett.url : self.options.url) + '" data-count="' + sett.count + '" data-text="' + self.options.text + '" data-via="' + sett.via + '" data-hashtags="' + sett.hashtags + '" data-related="' + sett.related + '" data-lang="' + sett.lang + '">Tweet</a></div>');
+        var loading = 0;
+        if (typeof twttr === 'undefined' && loading == 0) {
+          loading = 1;
+          (function() {
+            var twitterScriptTag = document.createElement('script');
+            twitterScriptTag.type = 'text/javascript';
+            twitterScriptTag.async = true;
+            twitterScriptTag.src = '//platform.twitter.com/widgets.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(twitterScriptTag, s);
+          })();
+        } else {
+          $.ajax({
+            url: '//platform.twitter.com/widgets.js',
+            dataType: 'script',
+            cache: true
+          }); //http://stackoverflow.com/q/6536108
+        }
+      },
+      digg: function(self) {
+        var sett = self.options.buttons.digg;
+        $(self.element).find('.buttons').append('<div class="button digg"><a class="DiggThisButton ' + sett.type + '" rel="nofollow external" href="http://digg.com/submit?url=' + encodeURIComponent((sett.url !== '' ? sett.url : self.options.url)) + '"></a></div>');
+        var loading = 0;
+        if (typeof __DBW === 'undefined' && loading == 0) {
+          loading = 1;
+          (function() {
+            var s = document.createElement('SCRIPT'),
+              s1 = document.getElementsByTagName('SCRIPT')[0];
+            s.type = 'text/javascript';
+            s.async = true;
+            s.src = '//widgets.digg.com/buttons.js';
+            s1.parentNode.insertBefore(s, s1);
+          })();
+        }
+      },
+      delicious: function(self) {
+        if (self.options.buttons.delicious.size == 'tall') { //tall
+          var css = 'width:50px;',
+            cssCount = 'height:35px;width:50px;font-size:15px;line-height:35px;',
+            cssShare = 'height:18px;line-height:18px;margin-top:3px;';
+        } else { //medium
+          var css = 'width:93px;',
+            cssCount = 'float:right;padding:0 3px;height:20px;width:26px;line-height:20px;',
+            cssShare = 'float:left;height:20px;line-height:20px;';
+        }
+        var count = self.shorterTotal(self.options.count.delicious);
+        if (typeof count === "undefined") {
+          count = 0;
+        }
+        $(self.element).find('.buttons').append(
+          '<div class="button delicious"><div style="' + css + 'font:12px Arial,Helvetica,sans-serif;cursor:pointer;color:#666666;display:inline-block;float:none;height:20px;line-height:normal;margin:0;padding:0;text-indent:0;vertical-align:baseline;">' +
+          '<div style="' + cssCount + 'background-color:#fff;margin-bottom:5px;overflow:hidden;text-align:center;border:1px solid #ccc;border-radius:3px;">' + count + '</div>' +
+          '<div style="' + cssShare + 'display:block;padding:0;text-align:center;text-decoration:none;width:50px;background-color:#7EACEE;border:1px solid #40679C;border-radius:3px;color:#fff;">' +
+          '<img src="http://www.delicious.com/static/img/delicious.small.gif" height="10" width="10" alt="Delicious" /> Add</div></div></div>');
+
+        $(self.element).find('.delicious').on('click', function() {
+          self.openPopup('delicious');
+        });
+      },
+      stumbleupon: function(self) {
+        var sett = self.options.buttons.stumbleupon;
+        $(self.element).find('.buttons').append('<div class="button stumbleupon"><su:badge layout="' + sett.layout + '" location="' + (sett.url !== '' ? sett.url : self.options.url) + '"></su:badge></div>');
+        var loading = 0;
+        if (typeof STMBLPN === 'undefined' && loading == 0) {
+          loading = 1;
+          (function() {
+            var li = document.createElement('script');
+            li.type = 'text/javascript';
+            li.async = true;
+            li.src = '//platform.stumbleupon.com/1/widgets.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(li, s);
+          })();
+          s = window.setTimeout(function() {
+            if (typeof STMBLPN !== 'undefined') {
+              STMBLPN.processWidgets();
+              clearInterval(s);
+            }
+          }, 500);
+        } else {
+          STMBLPN.processWidgets();
+        }
+      },
+      linkedin: function(self) {
+        var sett = self.options.buttons.linkedin;
+        $(self.element).find('.buttons').append('<div class="button linkedin"><script type="in/share" data-url="' + (sett.url !== '' ? sett.url : self.options.url) + '" data-counter="' + sett.counter + '"></script></div>');
+        var loading = 0;
+        if (typeof window.IN === 'undefined' && loading == 0) {
+          loading = 1;
+          (function() {
+            var li = document.createElement('script');
+            li.type = 'text/javascript';
+            li.async = true;
+            li.src = '//platform.linkedin.com/in.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(li, s);
+          })();
+        } else {
+          window.IN.init();
+        }
+      },
+      pinterest: function(self) {
+        var sett = self.options.buttons.pinterest;
+        $(self.element).find('.buttons').append('<div class="button pinterest"><a href="http://pinterest.com/pin/create/button/?url=' + (sett.url !== '' ? sett.url : self.options.url) + '&media=' + sett.media + '&description=' + sett.description + '" class="pin-it-button" count-layout="' + sett.layout + '">Pin It</a></div>');
+
+        (function() {
+          var li = document.createElement('script');
+          li.type = 'text/javascript';
+          li.async = true;
+          li.src = '//assets.pinterest.com/js/pinit.js';
+          var s = document.getElementsByTagName('script')[0];
+          s.parentNode.insertBefore(li, s);
+        })();
+      }
+    },
+    /* Tracking for Google Analytics
+    ================================================== */
+    tracking = {
+      googlePlus: function() {},
+      facebook: function() {
+        //console.log('facebook');
+        fb = window.setInterval(function() {
+          if (typeof FB !== 'undefined') {
+            FB.Event.subscribe('edge.create', function(targetUrl) {
+              _gaq.push(['_trackSocial', 'facebook', 'like', targetUrl]);
+            });
+            FB.Event.subscribe('edge.remove', function(targetUrl) {
+              _gaq.push(['_trackSocial', 'facebook', 'unlike', targetUrl]);
+            });
+            FB.Event.subscribe('message.send', function(targetUrl) {
+              _gaq.push(['_trackSocial', 'facebook', 'send', targetUrl]);
+            });
+            //console.log('ok');
+            clearInterval(fb);
+          }
+        }, 1000);
+      },
+      twitter: function() {
+        //console.log('twitter');
+        tw = window.setInterval(function() {
+          if (typeof twttr !== 'undefined') {
+            twttr.events.bind('tweet', function(event) {
+              if (event) {
+                _gaq.push(['_trackSocial', 'twitter', 'tweet']);
+              }
+            });
+            //console.log('ok');
+            clearInterval(tw);
+          }
+        }, 1000);
+      },
+      digg: function() {
+        //if somenone find a solution, mail me !
+        /*$(this.element).find('.digg').on('click', function(){
+          _gaq.push(['_trackSocial', 'digg', 'add']);
+        });*/
+      },
+      delicious: function() {},
+      stumbleupon: function() {},
+      linkedin: function() {
+        function LinkedInShare() {
+          _gaq.push(['_trackSocial', 'linkedin', 'share']);
+        }
+      },
+      pinterest: function() {
+        //if somenone find a solution, mail me !
+      }
+    },
+    /* Popup for each social network
+    ================================================== */
+    popup = {
+      googlePlus: function(opt) {
+        window.open("https://plus.google.com/share?hl=" + opt.buttons.googlePlus.lang + "&url=" + encodeURIComponent((opt.buttons.googlePlus.url !== '' ? opt.buttons.googlePlus.url : opt.url)), "", "toolbar=0, status=0, width=900, height=500");
+      },
+      facebook: function(opt) {
+        window.open("http://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent((opt.buttons.facebook.url !== '' ? opt.buttons.facebook.url : opt.url)) + "&t=" + opt.text + "", "", "toolbar=0, status=0, width=900, height=500");
+      },
+      twitter: function(opt) {
+        window.open("https://twitter.com/intent/tweet?text=" + encodeURIComponent(opt.text) + "&url=" + encodeURIComponent((opt.buttons.twitter.url !== '' ? opt.buttons.twitter.url : opt.url)) + (opt.buttons.twitter.via !== '' ? '&via=' + opt.buttons.twitter.via : ''), "", "toolbar=0, status=0, width=650, height=360");
+      },
+      digg: function(opt) {
+        window.open("http://digg.com/tools/diggthis/submit?url=" + encodeURIComponent((opt.buttons.digg.url !== '' ? opt.buttons.digg.url : opt.url)) + "&title=" + opt.text + "&related=true&style=true", "", "toolbar=0, status=0, width=650, height=360");
+      },
+      delicious: function(opt) {
+        window.open('http://www.delicious.com/save?v=5&noui&jump=close&url=' + encodeURIComponent((opt.buttons.delicious.url !== '' ? opt.buttons.delicious.url : opt.url)) + '&title=' + opt.text, 'delicious', 'toolbar=no,width=550,height=550');
+      },
+      stumbleupon: function(opt) {
+        window.open('http://www.stumbleupon.com/badge/?url=' + encodeURIComponent((opt.buttons.stumbleupon.url !== '' ? opt.buttons.stumbleupon.url : opt.url)), 'stumbleupon', 'toolbar=no,width=550,height=550');
+      },
+      linkedin: function(opt) {
+        window.open('https://www.linkedin.com/cws/share?url=' + encodeURIComponent((opt.buttons.linkedin.url !== '' ? opt.buttons.linkedin.url : opt.url)) + '&token=&isFramed=true', 'linkedin', 'toolbar=no,width=550,height=550');
+      },
+      pinterest: function(opt) {
+        window.open('http://pinterest.com/pin/create/button/?url=' + encodeURIComponent((opt.buttons.pinterest.url !== '' ? opt.buttons.pinterest.url : opt.url)) + '&media=' + encodeURIComponent(opt.buttons.pinterest.media) + '&description=' + opt.buttons.pinterest.description, 'pinterest', 'toolbar=no,width=700,height=300');
+      }
+    };
+
+  /* Plugin constructor
+  ================================================== */
+  function Plugin(element, options) {
+    this.element = element;
+
+    this.options = $.extend(true, {}, defaults, options);
+    this.options.share = options.share; //simple solution to allow order of buttons
+
+    this._defaults = defaults;
+    this._name = pluginName;
+
+    this.init();
+  };
+
+  /* Initialization method
+  ================================================== */
+  Plugin.prototype.init = function() {
+    var self = this;
+    if (this.options.urlCurl !== '') {
+      urlJson.googlePlus = this.options.urlCurl + '?url={url}&type=googlePlus'; // PHP script for GooglePlus...
+      urlJson.stumbleupon = this.options.urlCurl + '?url={url}&type=stumbleupon'; // PHP script for Stumbleupon...
+    }
+    $(this.element).addClass(this.options.className); //add class
+
+    //HTML5 Custom data
+    if (typeof $(this.element).data('title') !== 'undefined') {
+      this.options.title = $(this.element).attr('data-title');
+    }
+    if (typeof $(this.element).data('url') !== 'undefined') {
+      this.options.url = $(this.element).data('url');
+    }
+    if (typeof $(this.element).data('text') !== 'undefined') {
+      this.options.text = $(this.element).data('text');
+    }
+
+    //how many social website have been selected
+    $.each(this.options.share, function(name, val) {
+      if (val === true) {
+        self.options.shareTotal++;
+      }
+    });
+
+    if (self.options.enableCounter === true) { //if for some reason you don't need counter
+      //get count of social share that have been selected
+      $.each(this.options.share, function(name, val) {
+        if (val === true) {
+          //self.getSocialJson(name);
+          try {
+            self.getSocialJson(name);
+          } catch (e) {}
+        }
+      });
+    } else if (self.options.template !== '') { //for personalized button (with template)
+      this.options.render(this, this.options);
+    } else { // if you want to use official button like example 3 or 5
+      this.loadButtons();
+    }
+
+    //add hover event
+    $(this.element).hover(function() {
+      //load social button if enable and 1 time
+      if ($(this).find('.buttons').length === 0 && self.options.enableHover === true) {
+        self.loadButtons();
+      }
+      self.options.hover(self, self.options);
+    }, function() {
+      self.options.hide(self, self.options);
+    });
+
+    //click event
+    $(this.element).click(function() {
+      self.options.click(self, self.options);
+      return false;
+    });
+  };
+
+  /* loadButtons methode
+  ================================================== */
+  Plugin.prototype.loadButtons = function() {
+    var self = this;
+    $(this.element).append('<div class="buttons"></div>');
+    $.each(self.options.share, function(name, val) {
+      if (val == true) {
+        loadButton[name](self);
+        if (self.options.enableTracking === true) { //add tracking
+          tracking[name]();
+        }
+      }
+    });
+  };
+
+  /* getSocialJson methode
+  ================================================== */
+  Plugin.prototype.getSocialJson = function(name) {
+    var self = this,
+      count = 0,
+      url = urlJson[name].replace('{url}', encodeURIComponent(this.options.url));
+    if (this.options.buttons[name].urlCount === true && this.options.buttons[name].url !== '') {
+      url = urlJson[name].replace('{url}', this.options.buttons[name].url);
+    }
+    //console.log('name : ' + name + ' - url : '+url); //debug
+    if (url != '' && self.options.urlCurl !== '') { //urlCurl = '' if you don't want to used PHP script but used social button
+      $.getJSON(url, function(json) {
+          if (typeof json.count !== "undefined") { //GooglePlus, Stumbleupon, Twitter, Pinterest and Digg
+            var temp = json.count + '';
+            temp = temp.replace('\u00c2\u00a0', ''); //remove google plus special chars
+            count += parseInt(temp, 10);
+          }
+          //get the FB total count (shares, likes and more)
+          else if (json.data && json.data.length > 0 && typeof json.data[0].total_count !== "undefined") { //Facebook total count
+            count += parseInt(json.data[0].total_count, 10);
+          } else if (typeof json[0] !== "undefined") { //Delicious
+            count += parseInt(json[0].total_posts, 10);
+          } else if (typeof json[0] !== "undefined") { //Stumbleupon
+          }
+          self.options.count[name] = count;
+          self.options.total += count;
+          self.renderer();
+          self.rendererPerso();
+          //console.log(json); //debug
+        })
+        .error(function() {
+          self.options.count[name] = 0;
+          self.rendererPerso();
+        });
+    } else {
+      self.renderer();
+      self.options.count[name] = 0;
+      self.rendererPerso();
+    }
+  };
+
+  /* launch render methode
+  ================================================== */
+  Plugin.prototype.rendererPerso = function() {
+    //check if this is the last social website to launch render
+    var shareCount = 0;
+    for (e in this.options.count) {
+      shareCount++;
+    }
+    if (shareCount === this.options.shareTotal) {
+      this.options.render(this, this.options);
+    }
+  };
+
+  /* render methode
+  ================================================== */
+  Plugin.prototype.renderer = function() {
+    var total = this.options.total,
+      template = this.options.template;
+    if (this.options.shorterTotal === true) { //format number like 1.2k or 5M
+      total = this.shorterTotal(total);
+    }
+
+    if (template !== '') { //if there is a template
+      template = template.replace('{total}', total);
+      $(this.element).html(template);
+    } else { //template by defaults
+      $(this.element).html(
+        '<div class="box"><a class="count" href="#">' + total + '</a>' +
+        (this.options.title !== '' ? '<a class="share" href="#">' + this.options.title + '</a>' : '') +
+        '</div>'
+      );
+    }
+  };
+
+  /* format total numbers like 1.2k or 5M
+  ================================================== */
+  Plugin.prototype.shorterTotal = function(num) {
+    if (num >= 1e6) {
+      num = (num / 1e6).toFixed(2) + "M"
+    } else if (num >= 1e3) {
+      num = (num / 1e3).toFixed(1) + "k"
+    }
+    return num;
+  };
+
+  /* Methode for open popup
+  ================================================== */
+  Plugin.prototype.openPopup = function(site) {
+    popup[site](this.options); //open
+    if (this.options.enableTracking === true) { //tracking!
+      var tracking = {
+        googlePlus: {
+          site: 'Google',
+          action: '+1'
+        },
+        facebook: {
+          site: 'facebook',
+          action: 'like'
+        },
+        twitter: {
+          site: 'twitter',
+          action: 'tweet'
+        },
+        digg: {
+          site: 'digg',
+          action: 'add'
+        },
+        delicious: {
+          site: 'delicious',
+          action: 'add'
+        },
+        stumbleupon: {
+          site: 'stumbleupon',
+          action: 'add'
+        },
+        linkedin: {
+          site: 'linkedin',
+          action: 'share'
+        },
+        pinterest: {
+          site: 'pinterest',
+          action: 'pin'
+        }
+      };
+      _gaq.push(['_trackSocial', tracking[site].site, tracking[site].action]);
+    }
+  };
+
+  /* Methode for add +1 to a counter
+  ================================================== */
+  Plugin.prototype.simulateClick = function() {
+    var html = $(this.element).html();
+    $(this.element).html(html.replace(this.options.total, this.options.total + 1));
+  };
+
+  /* Methode for add +1 to a counter
+  ================================================== */
+  Plugin.prototype.update = function(url, text) {
+    if (url !== '') {
+      this.options.url = url;
+    }
+    if (text !== '') {
+      this.options.text = text;
+    }
+  };
+
+  /* A really lightweight plugin wrapper around the constructor, preventing against multiple instantiations
+  ================================================== */
+  $.fn[pluginName] = function(options) {
+    var args = arguments;
+    if (options === undefined || typeof options === 'object') {
+      return this.each(function() {
+        if (!$.data(this, 'plugin_' + pluginName)) {
+          $.data(this, 'plugin_' + pluginName, new Plugin(this, options));
+        }
+      });
+    } else if (typeof options === 'string' && options[0] !== '_' && options !== 'init') {
+      return this.each(function() {
+        var instance = $.data(this, 'plugin_' + pluginName);
+        if (instance instanceof Plugin && typeof instance[options] === 'function') {
+          instance[options].apply(instance, Array.prototype.slice.call(args, 1));
+        }
+      });
+    }
+  };
+})(jQuery, window, document);
+/*
+ * Toastr
+ * Copyright 2012-2015
+ * Authors: John Papa, Hans Fjällemark, and Tim Ferrell.
+ * All Rights Reserved.
+ * Use, reproduction, distribution, and modification of this code is subject to the terms and
+ * conditions of the MIT license, available at http://www.opensource.org/licenses/mit-license.php
+ *
+ * ARIA Support: Greta Krafsig
+ *
+ * Project: https://github.com/CodeSeven/toastr
+ */
+/* global define */
+(function (define) {
+    define(['jquery'], function ($) {
+        return (function () {
+            var $container;
+            var listener;
+            var toastId = 0;
+            var toastType = {
+                error: 'error',
+                info: 'info',
+                success: 'success',
+                warning: 'warning'
+            };
+
+            var toastr = {
+                clear: clear,
+                remove: remove,
+                error: error,
+                getContainer: getContainer,
+                info: info,
+                options: {},
+                subscribe: subscribe,
+                success: success,
+                version: '2.1.4',
+                warning: warning
+            };
+
+            var previousToast;
+
+            return toastr;
+
+            ////////////////
+
+            function error(message, title, optionsOverride) {
+                return notify({
+                    type: toastType.error,
+                    iconClass: getOptions().iconClasses.error,
+                    message: message,
+                    optionsOverride: optionsOverride,
+                    title: title
+                });
+            }
+
+            function getContainer(options, create) {
+                if (!options) { options = getOptions(); }
+                $container = $('#' + options.containerId);
+                if ($container.length) {
+                    return $container;
+                }
+                if (create) {
+                    $container = createContainer(options);
+                }
+                return $container;
+            }
+
+            function info(message, title, optionsOverride) {
+                return notify({
+                    type: toastType.info,
+                    iconClass: getOptions().iconClasses.info,
+                    message: message,
+                    optionsOverride: optionsOverride,
+                    title: title
+                });
+            }
+
+            function subscribe(callback) {
+                listener = callback;
+            }
+
+            function success(message, title, optionsOverride) {
+                return notify({
+                    type: toastType.success,
+                    iconClass: getOptions().iconClasses.success,
+                    message: message,
+                    optionsOverride: optionsOverride,
+                    title: title
+                });
+            }
+
+            function warning(message, title, optionsOverride) {
+                return notify({
+                    type: toastType.warning,
+                    iconClass: getOptions().iconClasses.warning,
+                    message: message,
+                    optionsOverride: optionsOverride,
+                    title: title
+                });
+            }
+
+            function clear($toastElement, clearOptions) {
+                var options = getOptions();
+                if (!$container) { getContainer(options); }
+                if (!clearToast($toastElement, options, clearOptions)) {
+                    clearContainer(options);
+                }
+            }
+
+            function remove($toastElement) {
+                var options = getOptions();
+                if (!$container) { getContainer(options); }
+                if ($toastElement && $(':focus', $toastElement).length === 0) {
+                    removeToast($toastElement);
+                    return;
+                }
+                if ($container.children().length) {
+                    $container.remove();
+                }
+            }
+
+            // internal functions
+
+            function clearContainer (options) {
+                var toastsToClear = $container.children();
+                for (var i = toastsToClear.length - 1; i >= 0; i--) {
+                    clearToast($(toastsToClear[i]), options);
+                }
+            }
+
+            function clearToast ($toastElement, options, clearOptions) {
+                var force = clearOptions && clearOptions.force ? clearOptions.force : false;
+                if ($toastElement && (force || $(':focus', $toastElement).length === 0)) {
+                    $toastElement[options.hideMethod]({
+                        duration: options.hideDuration,
+                        easing: options.hideEasing,
+                        complete: function () { removeToast($toastElement); }
+                    });
+                    return true;
+                }
+                return false;
+            }
+
+            function createContainer(options) {
+                $container = $('<div/>')
+                    .attr('id', options.containerId)
+                    .addClass(options.positionClass);
+
+                $container.appendTo($(options.target));
+                return $container;
+            }
+
+            function getDefaults() {
+                return {
+                    tapToDismiss: true,
+                    toastClass: 'toast',
+                    containerId: 'toast-container',
+                    debug: false,
+
+                    showMethod: 'fadeIn', //fadeIn, slideDown, and show are built into jQuery
+                    showDuration: 300,
+                    showEasing: 'swing', //swing and linear are built into jQuery
+                    onShown: undefined,
+                    hideMethod: 'fadeOut',
+                    hideDuration: 1000,
+                    hideEasing: 'swing',
+                    onHidden: undefined,
+                    closeMethod: false,
+                    closeDuration: false,
+                    closeEasing: false,
+                    closeOnHover: true,
+
+                    extendedTimeOut: 1000,
+                    iconClasses: {
+                        error: 'toast-error',
+                        info: 'toast-info',
+                        success: 'toast-success',
+                        warning: 'toast-warning'
+                    },
+                    iconClass: 'toast-info',
+                    positionClass: 'toast-top-right',
+                    timeOut: 5000, // Set timeOut and extendedTimeOut to 0 to make it sticky
+                    titleClass: 'toast-title',
+                    messageClass: 'toast-message',
+                    escapeHtml: false,
+                    target: 'body',
+                    closeHtml: '<button type="button">&times;</button>',
+                    closeClass: 'toast-close-button',
+                    newestOnTop: true,
+                    preventDuplicates: false,
+                    progressBar: false,
+                    progressClass: 'toast-progress',
+                    rtl: false
+                };
+            }
+
+            function publish(args) {
+                if (!listener) { return; }
+                listener(args);
+            }
+
+            function notify(map) {
+                var options = getOptions();
+                var iconClass = map.iconClass || options.iconClass;
+
+                if (typeof (map.optionsOverride) !== 'undefined') {
+                    options = $.extend(options, map.optionsOverride);
+                    iconClass = map.optionsOverride.iconClass || iconClass;
+                }
+
+                if (shouldExit(options, map)) { return; }
+
+                toastId++;
+
+                $container = getContainer(options, true);
+
+                var intervalId = null;
+                var $toastElement = $('<div/>');
+                var $titleElement = $('<div/>');
+                var $messageElement = $('<div/>');
+                var $progressElement = $('<div/>');
+                var $closeElement = $(options.closeHtml);
+                var progressBar = {
+                    intervalId: null,
+                    hideEta: null,
+                    maxHideTime: null
+                };
+                var response = {
+                    toastId: toastId,
+                    state: 'visible',
+                    startTime: new Date(),
+                    options: options,
+                    map: map
+                };
+
+                personalizeToast();
+
+                displayToast();
+
+                handleEvents();
+
+                publish(response);
+
+                if (options.debug && console) {
+                    console.log(response);
+                }
+
+                return $toastElement;
+
+                function escapeHtml(source) {
+                    if (source == null) {
+                        source = '';
+                    }
+
+                    return source
+                        .replace(/&/g, '&amp;')
+                        .replace(/"/g, '&quot;')
+                        .replace(/'/g, '&#39;')
+                        .replace(/</g, '&lt;')
+                        .replace(/>/g, '&gt;');
+                }
+
+                function personalizeToast() {
+                    setIcon();
+                    setTitle();
+                    setMessage();
+                    setCloseButton();
+                    setProgressBar();
+                    setRTL();
+                    setSequence();
+                    setAria();
+                }
+
+                function setAria() {
+                    var ariaValue = '';
+                    switch (map.iconClass) {
+                        case 'toast-success':
+                        case 'toast-info':
+                            ariaValue =  'polite';
+                            break;
+                        default:
+                            ariaValue = 'assertive';
+                    }
+                    $toastElement.attr('aria-live', ariaValue);
+                }
+
+                function handleEvents() {
+                    if (options.closeOnHover) {
+                        $toastElement.hover(stickAround, delayedHideToast);
+                    }
+
+                    if (!options.onclick && options.tapToDismiss) {
+                        $toastElement.click(hideToast);
+                    }
+
+                    if (options.closeButton && $closeElement) {
+                        $closeElement.click(function (event) {
+                            if (event.stopPropagation) {
+                                event.stopPropagation();
+                            } else if (event.cancelBubble !== undefined && event.cancelBubble !== true) {
+                                event.cancelBubble = true;
+                            }
+
+                            if (options.onCloseClick) {
+                                options.onCloseClick(event);
+                            }
+
+                            hideToast(true);
+                        });
+                    }
+
+                    if (options.onclick) {
+                        $toastElement.click(function (event) {
+                            options.onclick(event);
+                            hideToast();
+                        });
+                    }
+                }
+
+                function displayToast() {
+                    $toastElement.hide();
+
+                    $toastElement[options.showMethod](
+                        {duration: options.showDuration, easing: options.showEasing, complete: options.onShown}
+                    );
+
+                    if (options.timeOut > 0) {
+                        intervalId = setTimeout(hideToast, options.timeOut);
+                        progressBar.maxHideTime = parseFloat(options.timeOut);
+                        progressBar.hideEta = new Date().getTime() + progressBar.maxHideTime;
+                        if (options.progressBar) {
+                            progressBar.intervalId = setInterval(updateProgress, 10);
+                        }
+                    }
+                }
+
+                function setIcon() {
+                    if (map.iconClass) {
+                        $toastElement.addClass(options.toastClass).addClass(iconClass);
+                    }
+                }
+
+                function setSequence() {
+                    if (options.newestOnTop) {
+                        $container.prepend($toastElement);
+                    } else {
+                        $container.append($toastElement);
+                    }
+                }
+
+                function setTitle() {
+                    if (map.title) {
+                        var suffix = map.title;
+                        if (options.escapeHtml) {
+                            suffix = escapeHtml(map.title);
+                        }
+                        $titleElement.append(suffix).addClass(options.titleClass);
+                        $toastElement.append($titleElement);
+                    }
+                }
+
+                function setMessage() {
+                    if (map.message) {
+                        var suffix = map.message;
+                        if (options.escapeHtml) {
+                            suffix = escapeHtml(map.message);
+                        }
+                        $messageElement.append(suffix).addClass(options.messageClass);
+                        $toastElement.append($messageElement);
+                    }
+                }
+
+                function setCloseButton() {
+                    if (options.closeButton) {
+                        $closeElement.addClass(options.closeClass).attr('role', 'button');
+                        $toastElement.prepend($closeElement);
+                    }
+                }
+
+                function setProgressBar() {
+                    if (options.progressBar) {
+                        $progressElement.addClass(options.progressClass);
+                        $toastElement.prepend($progressElement);
+                    }
+                }
+
+                function setRTL() {
+                    if (options.rtl) {
+                        $toastElement.addClass('rtl');
+                    }
+                }
+
+                function shouldExit(options, map) {
+                    if (options.preventDuplicates) {
+                        if (map.message === previousToast) {
+                            return true;
+                        } else {
+                            previousToast = map.message;
+                        }
+                    }
+                    return false;
+                }
+
+                function hideToast(override) {
+                    var method = override && options.closeMethod !== false ? options.closeMethod : options.hideMethod;
+                    var duration = override && options.closeDuration !== false ?
+                        options.closeDuration : options.hideDuration;
+                    var easing = override && options.closeEasing !== false ? options.closeEasing : options.hideEasing;
+                    if ($(':focus', $toastElement).length && !override) {
+                        return;
+                    }
+                    clearTimeout(progressBar.intervalId);
+                    return $toastElement[method]({
+                        duration: duration,
+                        easing: easing,
+                        complete: function () {
+                            removeToast($toastElement);
+                            clearTimeout(intervalId);
+                            if (options.onHidden && response.state !== 'hidden') {
+                                options.onHidden();
+                            }
+                            response.state = 'hidden';
+                            response.endTime = new Date();
+                            publish(response);
+                        }
+                    });
+                }
+
+                function delayedHideToast() {
+                    if (options.timeOut > 0 || options.extendedTimeOut > 0) {
+                        intervalId = setTimeout(hideToast, options.extendedTimeOut);
+                        progressBar.maxHideTime = parseFloat(options.extendedTimeOut);
+                        progressBar.hideEta = new Date().getTime() + progressBar.maxHideTime;
+                    }
+                }
+
+                function stickAround() {
+                    clearTimeout(intervalId);
+                    progressBar.hideEta = 0;
+                    $toastElement.stop(true, true)[options.showMethod](
+                        {duration: options.showDuration, easing: options.showEasing}
+                    );
+                }
+
+                function updateProgress() {
+                    var percentage = ((progressBar.hideEta - (new Date().getTime())) / progressBar.maxHideTime) * 100;
+                    $progressElement.width(percentage + '%');
+                }
+            }
+
+            function getOptions() {
+                return $.extend({}, getDefaults(), toastr.options);
+            }
+
+            function removeToast($toastElement) {
+                if (!$container) { $container = getContainer(); }
+                if ($toastElement.is(':visible')) {
+                    return;
+                }
+                $toastElement.remove();
+                $toastElement = null;
+                if ($container.children().length === 0) {
+                    $container.remove();
+                    previousToast = undefined;
+                }
+            }
+
+        })();
+    });
+}(typeof define === 'function' && define.amd ? define : function (deps, factory) {
+    if (typeof module !== 'undefined' && module.exports) { //Node
+        module.exports = factory(require('jquery'));
+    } else {
+        window.toastr = factory(window.jQuery);
+    }
+}));
+
 /*
  Copyright (C) Federico Zivolo 2017
  Distributed under the MIT License (license terms are at http://opensource.org/licenses/MIT).
@@ -19734,625 +20864,6 @@ new Vue({
 
 !function(a){"function"==typeof define&&define.amd?define([],a):"object"==typeof exports?module.exports=a():window.noUiSlider=a()}(function(){"use strict";function a(a,b){var c=document.createElement("div");return j(c,b),a.appendChild(c),c}function b(a){return a.filter(function(a){return!this[a]&&(this[a]=!0)},{})}function c(a,b){return Math.round(a/b)*b}function d(a,b){var c=a.getBoundingClientRect(),d=a.ownerDocument,e=d.documentElement,f=m();return/webkit.*Chrome.*Mobile/i.test(navigator.userAgent)&&(f.x=0),b?c.top+f.y-e.clientTop:c.left+f.x-e.clientLeft}function e(a){return"number"==typeof a&&!isNaN(a)&&isFinite(a)}function f(a,b,c){c>0&&(j(a,b),setTimeout(function(){k(a,b)},c))}function g(a){return Math.max(Math.min(a,100),0)}function h(a){return Array.isArray(a)?a:[a]}function i(a){a=String(a);var b=a.split(".");return b.length>1?b[1].length:0}function j(a,b){a.classList?a.classList.add(b):a.className+=" "+b}function k(a,b){a.classList?a.classList.remove(b):a.className=a.className.replace(new RegExp("(^|\\b)"+b.split(" ").join("|")+"(\\b|$)","gi")," ")}function l(a,b){return a.classList?a.classList.contains(b):new RegExp("\\b"+b+"\\b").test(a.className)}function m(){var a=void 0!==window.pageXOffset,b="CSS1Compat"===(document.compatMode||""),c=a?window.pageXOffset:b?document.documentElement.scrollLeft:document.body.scrollLeft,d=a?window.pageYOffset:b?document.documentElement.scrollTop:document.body.scrollTop;return{x:c,y:d}}function n(){return window.navigator.pointerEnabled?{start:"pointerdown",move:"pointermove",end:"pointerup"}:window.navigator.msPointerEnabled?{start:"MSPointerDown",move:"MSPointerMove",end:"MSPointerUp"}:{start:"mousedown touchstart",move:"mousemove touchmove",end:"mouseup touchend"}}function o(a,b){return 100/(b-a)}function p(a,b){return 100*b/(a[1]-a[0])}function q(a,b){return p(a,a[0]<0?b+Math.abs(a[0]):b-a[0])}function r(a,b){return b*(a[1]-a[0])/100+a[0]}function s(a,b){for(var c=1;a>=b[c];)c+=1;return c}function t(a,b,c){if(c>=a.slice(-1)[0])return 100;var d,e,f,g,h=s(c,a);return d=a[h-1],e=a[h],f=b[h-1],g=b[h],f+q([d,e],c)/o(f,g)}function u(a,b,c){if(c>=100)return a.slice(-1)[0];var d,e,f,g,h=s(c,b);return d=a[h-1],e=a[h],f=b[h-1],g=b[h],r([d,e],(c-f)*o(f,g))}function v(a,b,d,e){if(100===e)return e;var f,g,h=s(e,a);return d?(f=a[h-1],g=a[h],e-f>(g-f)/2?g:f):b[h-1]?a[h-1]+c(e-a[h-1],b[h-1]):e}function w(a,b,c){var d;if("number"==typeof b&&(b=[b]),"[object Array]"!==Object.prototype.toString.call(b))throw new Error("noUiSlider: 'range' contains invalid value.");if(d="min"===a?0:"max"===a?100:parseFloat(a),!e(d)||!e(b[0]))throw new Error("noUiSlider: 'range' value isn't numeric.");c.xPct.push(d),c.xVal.push(b[0]),d?c.xSteps.push(!isNaN(b[1])&&b[1]):isNaN(b[1])||(c.xSteps[0]=b[1]),c.xHighestCompleteStep.push(0)}function x(a,b,c){if(!b)return!0;c.xSteps[a]=p([c.xVal[a],c.xVal[a+1]],b)/o(c.xPct[a],c.xPct[a+1]);var d=(c.xVal[a+1]-c.xVal[a])/c.xNumSteps[a],e=Math.ceil(Number(d.toFixed(3))-1),f=c.xVal[a]+c.xNumSteps[a]*e;c.xHighestCompleteStep[a]=f}function y(a,b,c,d){this.xPct=[],this.xVal=[],this.xSteps=[d||!1],this.xNumSteps=[!1],this.xHighestCompleteStep=[],this.snap=b,this.direction=c;var e,f=[];for(e in a)a.hasOwnProperty(e)&&f.push([a[e],e]);for(f.length&&"object"==typeof f[0][0]?f.sort(function(a,b){return a[0][0]-b[0][0]}):f.sort(function(a,b){return a[0]-b[0]}),e=0;e<f.length;e++)w(f[e][1],f[e][0],this);for(this.xNumSteps=this.xSteps.slice(0),e=0;e<this.xNumSteps.length;e++)x(e,this.xNumSteps[e],this)}function z(a,b){if(!e(b))throw new Error("noUiSlider: 'step' is not numeric.");a.singleStep=b}function A(a,b){if("object"!=typeof b||Array.isArray(b))throw new Error("noUiSlider: 'range' is not an object.");if(void 0===b.min||void 0===b.max)throw new Error("noUiSlider: Missing 'min' or 'max' in 'range'.");if(b.min===b.max)throw new Error("noUiSlider: 'range' 'min' and 'max' cannot be equal.");a.spectrum=new y(b,a.snap,a.dir,a.singleStep)}function B(a,b){if(b=h(b),!Array.isArray(b)||!b.length)throw new Error("noUiSlider: 'start' option is incorrect.");a.handles=b.length,a.start=b}function C(a,b){if(a.snap=b,"boolean"!=typeof b)throw new Error("noUiSlider: 'snap' option must be a boolean.")}function D(a,b){if(a.animate=b,"boolean"!=typeof b)throw new Error("noUiSlider: 'animate' option must be a boolean.")}function E(a,b){if(a.animationDuration=b,"number"!=typeof b)throw new Error("noUiSlider: 'animationDuration' option must be a number.")}function F(a,b){var c,d=[!1];if("lower"===b?b=[!0,!1]:"upper"===b&&(b=[!1,!0]),b===!0||b===!1){for(c=1;c<a.handles;c++)d.push(b);d.push(!1)}else{if(!Array.isArray(b)||!b.length||b.length!==a.handles+1)throw new Error("noUiSlider: 'connect' option doesn't match handle count.");d=b}a.connect=d}function G(a,b){switch(b){case"horizontal":a.ort=0;break;case"vertical":a.ort=1;break;default:throw new Error("noUiSlider: 'orientation' option is invalid.")}}function H(a,b){if(!e(b))throw new Error("noUiSlider: 'margin' option must be numeric.");if(0!==b&&(a.margin=a.spectrum.getMargin(b),!a.margin))throw new Error("noUiSlider: 'margin' option is only supported on linear sliders.")}function I(a,b){if(!e(b))throw new Error("noUiSlider: 'limit' option must be numeric.");if(a.limit=a.spectrum.getMargin(b),!a.limit||a.handles<2)throw new Error("noUiSlider: 'limit' option is only supported on linear sliders with 2 or more handles.")}function J(a,b){if(!e(b))throw new Error("noUiSlider: 'padding' option must be numeric.");if(0!==b){if(a.padding=a.spectrum.getMargin(b),!a.padding)throw new Error("noUiSlider: 'padding' option is only supported on linear sliders.");if(a.padding<0)throw new Error("noUiSlider: 'padding' option must be a positive number.");if(a.padding>=50)throw new Error("noUiSlider: 'padding' option must be less than half the range.")}}function K(a,b){switch(b){case"ltr":a.dir=0;break;case"rtl":a.dir=1;break;default:throw new Error("noUiSlider: 'direction' option was not recognized.")}}function L(a,b){if("string"!=typeof b)throw new Error("noUiSlider: 'behaviour' must be a string containing options.");var c=b.indexOf("tap")>=0,d=b.indexOf("drag")>=0,e=b.indexOf("fixed")>=0,f=b.indexOf("snap")>=0,g=b.indexOf("hover")>=0;if(e){if(2!==a.handles)throw new Error("noUiSlider: 'fixed' behaviour must be used with 2 handles");H(a,a.start[1]-a.start[0])}a.events={tap:c||f,drag:d,fixed:e,snap:f,hover:g}}function M(a,b){if(b!==!1)if(b===!0){a.tooltips=[];for(var c=0;c<a.handles;c++)a.tooltips.push(!0)}else{if(a.tooltips=h(b),a.tooltips.length!==a.handles)throw new Error("noUiSlider: must pass a formatter for all handles.");a.tooltips.forEach(function(a){if("boolean"!=typeof a&&("object"!=typeof a||"function"!=typeof a.to))throw new Error("noUiSlider: 'tooltips' must be passed a formatter or 'false'.")})}}function N(a,b){if(a.format=b,"function"==typeof b.to&&"function"==typeof b.from)return!0;throw new Error("noUiSlider: 'format' requires 'to' and 'from' methods.")}function O(a,b){if(void 0!==b&&"string"!=typeof b&&b!==!1)throw new Error("noUiSlider: 'cssPrefix' must be a string or `false`.");a.cssPrefix=b}function P(a,b){if(void 0!==b&&"object"!=typeof b)throw new Error("noUiSlider: 'cssClasses' must be an object.");if("string"==typeof a.cssPrefix){a.cssClasses={};for(var c in b)b.hasOwnProperty(c)&&(a.cssClasses[c]=a.cssPrefix+b[c])}else a.cssClasses=b}function Q(a,b){if(b!==!0&&b!==!1)throw new Error("noUiSlider: 'useRequestAnimationFrame' option should be true (default) or false.");a.useRequestAnimationFrame=b}function R(a){var b={margin:0,limit:0,padding:0,animate:!0,animationDuration:300,format:U},c={step:{r:!1,t:z},start:{r:!0,t:B},connect:{r:!0,t:F},direction:{r:!0,t:K},snap:{r:!1,t:C},animate:{r:!1,t:D},animationDuration:{r:!1,t:E},range:{r:!0,t:A},orientation:{r:!1,t:G},margin:{r:!1,t:H},limit:{r:!1,t:I},padding:{r:!1,t:J},behaviour:{r:!0,t:L},format:{r:!1,t:N},tooltips:{r:!1,t:M},cssPrefix:{r:!1,t:O},cssClasses:{r:!1,t:P},useRequestAnimationFrame:{r:!1,t:Q}},d={connect:!1,direction:"ltr",behaviour:"tap",orientation:"horizontal",cssPrefix:"noUi-",cssClasses:{target:"target",base:"base",origin:"origin",handle:"handle",handleLower:"handle-lower",handleUpper:"handle-upper",horizontal:"horizontal",vertical:"vertical",background:"background",connect:"connect",ltr:"ltr",rtl:"rtl",draggable:"draggable",drag:"state-drag",tap:"state-tap",active:"active",tooltip:"tooltip",pips:"pips",pipsHorizontal:"pips-horizontal",pipsVertical:"pips-vertical",marker:"marker",markerHorizontal:"marker-horizontal",markerVertical:"marker-vertical",markerNormal:"marker-normal",markerLarge:"marker-large",markerSub:"marker-sub",value:"value",valueHorizontal:"value-horizontal",valueVertical:"value-vertical",valueNormal:"value-normal",valueLarge:"value-large",valueSub:"value-sub"},useRequestAnimationFrame:!0};Object.keys(c).forEach(function(e){if(void 0===a[e]&&void 0===d[e]){if(c[e].r)throw new Error("noUiSlider: '"+e+"' is required.");return!0}c[e].t(b,void 0===a[e]?d[e]:a[e])}),b.pips=a.pips;var e=[["left","top"],["right","bottom"]];return b.style=e[b.dir][b.ort],b.styleOposite=e[b.dir?0:1][b.ort],b}function S(c,e,i){function o(b,c){var d=a(b,e.cssClasses.origin),f=a(d,e.cssClasses.handle);return f.setAttribute("data-handle",c),0===c?j(f,e.cssClasses.handleLower):c===e.handles-1&&j(f,e.cssClasses.handleUpper),d}function p(b,c){return!!c&&a(b,e.cssClasses.connect)}function q(a,b){ba=[],ca=[],ca.push(p(b,a[0]));for(var c=0;c<e.handles;c++)ba.push(o(b,c)),ha[c]=c,ca.push(p(b,a[c+1]))}function r(b){j(b,e.cssClasses.target),0===e.dir?j(b,e.cssClasses.ltr):j(b,e.cssClasses.rtl),0===e.ort?j(b,e.cssClasses.horizontal):j(b,e.cssClasses.vertical),aa=a(b,e.cssClasses.base)}function s(b,c){return!!e.tooltips[c]&&a(b.firstChild,e.cssClasses.tooltip)}function t(){var a=ba.map(s);Z("update",function(b,c,d){if(a[c]){var f=b[c];e.tooltips[c]!==!0&&(f=e.tooltips[c].to(d[c])),a[c].innerHTML=f}})}function u(a,b,c){if("range"===a||"steps"===a)return ja.xVal;if("count"===a){var d,e=100/(b-1),f=0;for(b=[];(d=f++*e)<=100;)b.push(d);a="positions"}return"positions"===a?b.map(function(a){return ja.fromStepping(c?ja.getStep(a):a)}):"values"===a?c?b.map(function(a){return ja.fromStepping(ja.getStep(ja.toStepping(a)))}):b:void 0}function v(a,c,d){function e(a,b){return(a+b).toFixed(7)/1}var f={},g=ja.xVal[0],h=ja.xVal[ja.xVal.length-1],i=!1,j=!1,k=0;return d=b(d.slice().sort(function(a,b){return a-b})),d[0]!==g&&(d.unshift(g),i=!0),d[d.length-1]!==h&&(d.push(h),j=!0),d.forEach(function(b,g){var h,l,m,n,o,p,q,r,s,t,u=b,v=d[g+1];if("steps"===c&&(h=ja.xNumSteps[g]),h||(h=v-u),u!==!1&&void 0!==v)for(h=Math.max(h,1e-7),l=u;l<=v;l=e(l,h)){for(n=ja.toStepping(l),o=n-k,r=o/a,s=Math.round(r),t=o/s,m=1;m<=s;m+=1)p=k+m*t,f[p.toFixed(5)]=["x",0];q=d.indexOf(l)>-1?1:"steps"===c?2:0,!g&&i&&(q=0),l===v&&j||(f[n.toFixed(5)]=[l,q]),k=n}}),f}function w(a,b,c){function d(a,b){var c=b===e.cssClasses.value,d=c?m:n,f=c?k:l;return b+" "+d[e.ort]+" "+f[a]}function f(a,b,c){return'class="'+d(c[1],b)+'" style="'+e.style+": "+a+'%"'}function g(a,d){d[1]=d[1]&&b?b(d[0],d[1]):d[1],i+="<div "+f(a,e.cssClasses.marker,d)+"></div>",d[1]&&(i+="<div "+f(a,e.cssClasses.value,d)+">"+c.to(d[0])+"</div>")}var h=document.createElement("div"),i="",k=[e.cssClasses.valueNormal,e.cssClasses.valueLarge,e.cssClasses.valueSub],l=[e.cssClasses.markerNormal,e.cssClasses.markerLarge,e.cssClasses.markerSub],m=[e.cssClasses.valueHorizontal,e.cssClasses.valueVertical],n=[e.cssClasses.markerHorizontal,e.cssClasses.markerVertical];return j(h,e.cssClasses.pips),j(h,0===e.ort?e.cssClasses.pipsHorizontal:e.cssClasses.pipsVertical),Object.keys(a).forEach(function(b){g(b,a[b])}),h.innerHTML=i,h}function x(a){var b=a.mode,c=a.density||1,d=a.filter||!1,e=a.values||!1,f=a.stepped||!1,g=u(b,e,f),h=v(c,b,g),i=a.format||{to:Math.round};return fa.appendChild(w(h,d,i))}function y(){var a=aa.getBoundingClientRect(),b="offset"+["Width","Height"][e.ort];return 0===e.ort?a.width||aa[b]:a.height||aa[b]}function z(a,b,c,d){var f=function(b){return!fa.hasAttribute("disabled")&&(!l(fa,e.cssClasses.tap)&&(!!(b=A(b,d.pageOffset))&&(!(a===ea.start&&void 0!==b.buttons&&b.buttons>1)&&((!d.hover||!b.buttons)&&(b.calcPoint=b.points[e.ort],void c(b,d))))))},g=[];return a.split(" ").forEach(function(a){b.addEventListener(a,f,!1),g.push([a,f])}),g}function A(a,b){a.preventDefault();var c,d,e=0===a.type.indexOf("touch"),f=0===a.type.indexOf("mouse"),g=0===a.type.indexOf("pointer");if(0===a.type.indexOf("MSPointer")&&(g=!0),e){if(a.touches.length>1)return!1;c=a.changedTouches[0].pageX,d=a.changedTouches[0].pageY}return b=b||m(),(f||g)&&(c=a.clientX+b.x,d=a.clientY+b.y),a.pageOffset=b,a.points=[c,d],a.cursor=f||g,a}function B(a){var b=a-d(aa,e.ort),c=100*b/y();return e.dir?100-c:c}function C(a){var b=100,c=!1;return ba.forEach(function(d,e){if(!d.hasAttribute("disabled")){var f=Math.abs(ga[e]-a);f<b&&(c=e,b=f)}}),c}function D(a,b,c,d){var e=c.slice(),f=[!a,a],g=[a,!a];d=d.slice(),a&&d.reverse(),d.length>1?d.forEach(function(a,c){var d=M(e,a,e[a]+b,f[c],g[c]);d===!1?b=0:(b=d-e[a],e[a]=d)}):f=g=[!0];var h=!1;d.forEach(function(a,d){h=Q(a,c[a]+b,f[d],g[d])||h}),h&&d.forEach(function(a){E("update",a),E("slide",a)})}function E(a,b,c){Object.keys(la).forEach(function(d){var f=d.split(".")[0];a===f&&la[d].forEach(function(a){a.call(da,ka.map(e.format.to),b,ka.slice(),c||!1,ga.slice())})})}function F(a,b){"mouseout"===a.type&&"HTML"===a.target.nodeName&&null===a.relatedTarget&&H(a,b)}function G(a,b){if(navigator.appVersion.indexOf("MSIE 9")===-1&&0===a.buttons&&0!==b.buttonsProperty)return H(a,b);var c=(e.dir?-1:1)*(a.calcPoint-b.startCalcPoint),d=100*c/b.baseSize;D(c>0,d,b.locations,b.handleNumbers)}function H(a,b){ia&&(k(ia,e.cssClasses.active),ia=!1),a.cursor&&(document.body.style.cursor="",document.body.removeEventListener("selectstart",document.body.noUiListener)),document.documentElement.noUiListeners.forEach(function(a){document.documentElement.removeEventListener(a[0],a[1])}),k(fa,e.cssClasses.drag),P(),b.handleNumbers.forEach(function(a){E("set",a),E("change",a),E("end",a)})}function I(a,b){if(1===b.handleNumbers.length){var c=ba[b.handleNumbers[0]];if(c.hasAttribute("disabled"))return!1;ia=c.children[0],j(ia,e.cssClasses.active)}a.preventDefault(),a.stopPropagation();var d=z(ea.move,document.documentElement,G,{startCalcPoint:a.calcPoint,baseSize:y(),pageOffset:a.pageOffset,handleNumbers:b.handleNumbers,buttonsProperty:a.buttons,locations:ga.slice()}),f=z(ea.end,document.documentElement,H,{handleNumbers:b.handleNumbers}),g=z("mouseout",document.documentElement,F,{handleNumbers:b.handleNumbers});if(document.documentElement.noUiListeners=d.concat(f,g),a.cursor){document.body.style.cursor=getComputedStyle(a.target).cursor,ba.length>1&&j(fa,e.cssClasses.drag);var h=function(){return!1};document.body.noUiListener=h,document.body.addEventListener("selectstart",h,!1)}b.handleNumbers.forEach(function(a){E("start",a)})}function J(a){a.stopPropagation();var b=B(a.calcPoint),c=C(b);return c!==!1&&(e.events.snap||f(fa,e.cssClasses.tap,e.animationDuration),Q(c,b,!0,!0),P(),E("slide",c,!0),E("set",c,!0),E("change",c,!0),E("update",c,!0),void(e.events.snap&&I(a,{handleNumbers:[c]})))}function K(a){var b=B(a.calcPoint),c=ja.getStep(b),d=ja.fromStepping(c);Object.keys(la).forEach(function(a){"hover"===a.split(".")[0]&&la[a].forEach(function(a){a.call(da,d)})})}function L(a){a.fixed||ba.forEach(function(a,b){z(ea.start,a.children[0],I,{handleNumbers:[b]})}),a.tap&&z(ea.start,aa,J,{}),a.hover&&z(ea.move,aa,K,{hover:!0}),a.drag&&ca.forEach(function(b,c){if(b!==!1&&0!==c&&c!==ca.length-1){var d=ba[c-1],f=ba[c],g=[b];j(b,e.cssClasses.draggable),a.fixed&&(g.push(d.children[0]),g.push(f.children[0])),g.forEach(function(a){z(ea.start,a,I,{handles:[d,f],handleNumbers:[c-1,c]})})}})}function M(a,b,c,d,f){return ba.length>1&&(d&&b>0&&(c=Math.max(c,a[b-1]+e.margin)),f&&b<ba.length-1&&(c=Math.min(c,a[b+1]-e.margin))),ba.length>1&&e.limit&&(d&&b>0&&(c=Math.min(c,a[b-1]+e.limit)),f&&b<ba.length-1&&(c=Math.max(c,a[b+1]-e.limit))),e.padding&&(0===b&&(c=Math.max(c,e.padding)),b===ba.length-1&&(c=Math.min(c,100-e.padding))),c=ja.getStep(c),c=g(c),c!==a[b]&&c}function N(a){return a+"%"}function O(a,b){ga[a]=b,ka[a]=ja.fromStepping(b);var c=function(){ba[a].style[e.style]=N(b),S(a),S(a+1)};window.requestAnimationFrame&&e.useRequestAnimationFrame?window.requestAnimationFrame(c):c()}function P(){ha.forEach(function(a){var b=ga[a]>50?-1:1,c=3+(ba.length+b*a);ba[a].childNodes[0].style.zIndex=c})}function Q(a,b,c,d){return b=M(ga,a,b,c,d),b!==!1&&(O(a,b),!0)}function S(a){if(ca[a]){var b=0,c=100;0!==a&&(b=ga[a-1]),a!==ca.length-1&&(c=ga[a]),ca[a].style[e.style]=N(b),ca[a].style[e.styleOposite]=N(100-c)}}function T(a,b){null!==a&&a!==!1&&("number"==typeof a&&(a=String(a)),a=e.format.from(a),a===!1||isNaN(a)||Q(b,ja.toStepping(a),!1,!1))}function U(a,b){var c=h(a),d=void 0===ga[0];b=void 0===b||!!b,c.forEach(T),e.animate&&!d&&f(fa,e.cssClasses.tap,e.animationDuration),ha.forEach(function(a){Q(a,ga[a],!0,!1)}),P(),ha.forEach(function(a){E("update",a),null!==c[a]&&b&&E("set",a)})}function V(a){U(e.start,a)}function W(){var a=ka.map(e.format.to);return 1===a.length?a[0]:a}function X(){for(var a in e.cssClasses)e.cssClasses.hasOwnProperty(a)&&k(fa,e.cssClasses[a]);for(;fa.firstChild;)fa.removeChild(fa.firstChild);delete fa.noUiSlider}function Y(){return ga.map(function(a,b){var c=ja.getNearbySteps(a),d=ka[b],e=c.thisStep.step,f=null;e!==!1&&d+e>c.stepAfter.startValue&&(e=c.stepAfter.startValue-d),f=d>c.thisStep.startValue?c.thisStep.step:c.stepBefore.step!==!1&&d-c.stepBefore.highestStep,100===a?e=null:0===a&&(f=null);var g=ja.countStepDecimals();return null!==e&&e!==!1&&(e=Number(e.toFixed(g))),null!==f&&f!==!1&&(f=Number(f.toFixed(g))),[f,e]})}function Z(a,b){la[a]=la[a]||[],la[a].push(b),"update"===a.split(".")[0]&&ba.forEach(function(a,b){E("update",b)})}function $(a){var b=a&&a.split(".")[0],c=b&&a.substring(b.length);Object.keys(la).forEach(function(a){var d=a.split(".")[0],e=a.substring(d.length);b&&b!==d||c&&c!==e||delete la[a]})}function _(a,b){var c=W(),d=["margin","limit","padding","range","animate","snap","step","format"];d.forEach(function(b){void 0!==a[b]&&(i[b]=a[b])});var f=R(i);d.forEach(function(b){void 0!==a[b]&&(e[b]=f[b])}),f.spectrum.direction=ja.direction,ja=f.spectrum,e.margin=f.margin,e.limit=f.limit,e.padding=f.padding,ga=[],U(a.start||c,b)}var aa,ba,ca,da,ea=n(),fa=c,ga=[],ha=[],ia=!1,ja=e.spectrum,ka=[],la={};if(fa.noUiSlider)throw new Error("Slider was already initialized.");return r(fa),q(e.connect,aa),da={destroy:X,steps:Y,on:Z,off:$,get:W,set:U,reset:V,__moveHandles:function(a,b,c){D(a,b,ga,c)},options:i,updateOptions:_,target:fa,pips:x},L(e.events),U(e.start),e.pips&&x(e.pips),e.tooltips&&t(),da}function T(a,b){if(!a.nodeName)throw new Error("noUiSlider.create requires a single element.");var c=R(b,a),d=S(a,c,b);return a.noUiSlider=d,d}y.prototype.getMargin=function(a){var b=this.xNumSteps[0];if(b&&a/b%1!==0)throw new Error("noUiSlider: 'limit', 'margin' and 'padding' must be divisible by step.");return 2===this.xPct.length&&p(this.xVal,a)},y.prototype.toStepping=function(a){return a=t(this.xVal,this.xPct,a)},y.prototype.fromStepping=function(a){return u(this.xVal,this.xPct,a)},y.prototype.getStep=function(a){return a=v(this.xPct,this.xSteps,this.snap,a)},y.prototype.getNearbySteps=function(a){var b=s(a,this.xPct);return{stepBefore:{startValue:this.xVal[b-2],step:this.xNumSteps[b-2],highestStep:this.xHighestCompleteStep[b-2]},thisStep:{startValue:this.xVal[b-1],step:this.xNumSteps[b-1],highestStep:this.xHighestCompleteStep[b-1]},stepAfter:{startValue:this.xVal[b-0],step:this.xNumSteps[b-0],highestStep:this.xHighestCompleteStep[b-0]}}},y.prototype.countStepDecimals=function(){var a=this.xNumSteps.map(i);return Math.max.apply(null,a)},y.prototype.convert=function(a){return this.getStep(this.toStepping(a))};var U={to:function(a){return void 0!==a&&a.toFixed(2)},from:Number};return{create:T}});
 /*!
- *  Sharrre.com - Make your sharing widget!
- *  Version: beta 1.3.5
- *  Author: Julien Hany
- *  License: MIT http://en.wikipedia.org/wiki/MIT_License or GPLv2 http://en.wikipedia.org/wiki/GNU_General_Public_License
- */
-
-;
-(function($, window, document, undefined) {
-
-  /* Defaults
-  ================================================== */
-  var pluginName = 'sharrre',
-    defaults = {
-      className: 'sharrre',
-      share: {
-        googlePlus: false,
-        facebook: false,
-        twitter: false,
-        digg: false,
-        delicious: false,
-        stumbleupon: false,
-        linkedin: false,
-        pinterest: false
-      },
-      shareTotal: 0,
-      template: '',
-      title: '',
-      url: document.location.href,
-      text: document.title,
-      urlCurl: 'sharrre.php', //PHP script for google plus...
-      count: {}, //counter by social network
-      total: 0, //total of sharing
-      shorterTotal: true, //show total by k or M when number is to big
-      enableHover: true, //disable if you want to personalize hover event with callback
-      enableCounter: true, //disable if you just want use buttons
-      enableTracking: false, //tracking with google analitycs
-      hover: function() {}, //personalize hover event with this callback function
-      hide: function() {}, //personalize hide event with this callback function
-      click: function() {}, //personalize click event with this callback function
-      render: function() {}, //personalize render event with this callback function
-      buttons: { //settings for buttons
-        googlePlus: { //http://www.google.com/webmasters/+1/button/
-          url: '', //if you need to personnalize button url
-          urlCount: false, //if you want to use personnalize button url on global counter
-          size: 'medium',
-          lang: 'en-US',
-          annotation: ''
-        },
-        facebook: { //http://developers.facebook.com/docs/reference/plugins/like/
-          url: '', //if you need to personalize url button
-          urlCount: false, //if you want to use personnalize button url on global counter
-          action: 'like',
-          layout: 'button_count',
-          width: '',
-          send: 'false',
-          faces: 'false',
-          colorscheme: '',
-          font: '',
-          lang: 'en_US'
-        },
-        twitter: { //http://twitter.com/about/resources/tweetbutton
-          url: '', //if you need to personalize url button
-          urlCount: false, //if you want to use personnalize button url on global counter
-          count: 'horizontal',
-          hashtags: '',
-          via: '',
-          related: '',
-          lang: 'en'
-        },
-        digg: { //http://about.digg.com/downloads/button/smart
-          url: '', //if you need to personalize url button
-          urlCount: false, //if you want to use personnalize button url on global counter
-          type: 'DiggCompact'
-        },
-        delicious: {
-          url: '', //if you need to personalize url button
-          urlCount: false, //if you want to use personnalize button url on global counter
-          size: 'medium' //medium or tall
-        },
-        stumbleupon: { //http://www.stumbleupon.com/badges/
-          url: '', //if you need to personalize url button
-          urlCount: false, //if you want to use personnalize button url on global counter
-          layout: '1'
-        },
-        linkedin: { //http://developer.linkedin.com/plugins/share-button
-          url: '', //if you need to personalize url button
-          urlCount: false, //if you want to use personnalize button url on global counter
-          counter: ''
-        },
-        pinterest: { //http://pinterest.com/about/goodies/
-          url: '', //if you need to personalize url button
-          media: '',
-          description: '',
-          layout: 'horizontal'
-        }
-      }
-    },
-    /* Json URL to get count number
-    ================================================== */
-    urlJson = {
-      googlePlus: "",
-
-      //new FQL method by Sire
-      facebook: "https://graph.facebook.com/fql?q=SELECT%20url,%20normalized_url,%20share_count,%20like_count,%20comment_count,%20total_count,commentsbox_count,%20comments_fbid,%20click_count%20FROM%20link_stat%20WHERE%20url=%27{url}%27&callback=?",
-      //old method facebook: "http://graph.facebook.com/?id={url}&callback=?",
-      //facebook : "http://api.ak.facebook.com/restserver.php?v=1.0&method=links.getStats&urls={url}&format=json"
-
-      twitter: "http://cdn.api.twitter.com/1/urls/count.json?url={url}&callback=?",
-      digg: "http://services.digg.com/2.0/story.getInfo?links={url}&type=javascript&callback=?",
-      delicious: 'http://feeds.delicious.com/v2/json/urlinfo/data?url={url}&callback=?',
-      //stumbleupon: "http://www.stumbleupon.com/services/1.01/badge.getinfo?url={url}&format=jsonp&callback=?",
-      stumbleupon: "",
-      linkedin: "http://www.linkedin.com/countserv/count/share?format=jsonp&url={url}&callback=?",
-      pinterest: "http://api.pinterest.com/v1/urls/count.json?url={url}&callback=?"
-    },
-    /* Load share buttons asynchronously
-    ================================================== */
-    loadButton = {
-      googlePlus: function(self) {
-        var sett = self.options.buttons.googlePlus;
-        //$(self.element).find('.buttons').append('<div class="button googleplus"><g:plusone size="'+self.options.buttons.googlePlus.size+'" href="'+self.options.url+'"></g:plusone></div>');
-        $(self.element).find('.buttons').append('<div class="button googleplus"><div class="g-plusone" data-size="' + sett.size + '" data-href="' + (sett.url !== '' ? sett.url : self.options.url) + '" data-annotation="' + sett.annotation + '"></div></div>');
-        window.___gcfg = {
-          lang: self.options.buttons.googlePlus.lang
-        };
-        var loading = 0;
-        if (typeof gapi === 'undefined' && loading == 0) {
-          loading = 1;
-          (function() {
-            var po = document.createElement('script');
-            po.type = 'text/javascript';
-            po.async = true;
-            po.src = '//apis.google.com/js/plusone.js';
-            var s = document.getElementsByTagName('script')[0];
-            s.parentNode.insertBefore(po, s);
-          })();
-        } else {
-          gapi.plusone.go();
-        }
-      },
-      facebook: function(self) {
-        var sett = self.options.buttons.facebook;
-        $(self.element).find('.buttons').append('<div class="button facebook"><div id="fb-root"></div><div class="fb-like" data-href="' + (sett.url !== '' ? sett.url : self.options.url) + '" data-send="' + sett.send + '" data-layout="' + sett.layout + '" data-width="' + sett.width + '" data-show-faces="' + sett.faces + '" data-action="' + sett.action + '" data-colorscheme="' + sett.colorscheme + '" data-font="' + sett.font + '" data-via="' + sett.via + '"></div></div>');
-        var loading = 0;
-        if (typeof FB === 'undefined' && loading == 0) {
-          loading = 1;
-          (function(d, s, id) {
-            var js, fjs = d.getElementsByTagName(s)[0];
-            if (d.getElementById(id)) {
-              return;
-            }
-            js = d.createElement(s);
-            js.id = id;
-            js.src = '//connect.facebook.net/' + sett.lang + '/all.js#xfbml=1';
-            fjs.parentNode.insertBefore(js, fjs);
-          }(document, 'script', 'facebook-jssdk'));
-        } else {
-          FB.XFBML.parse();
-        }
-      },
-      twitter: function(self) {
-        var sett = self.options.buttons.twitter;
-        $(self.element).find('.buttons').append('<div class="button twitter"><a href="https://twitter.com/share" class="twitter-share-button" data-url="' + (sett.url !== '' ? sett.url : self.options.url) + '" data-count="' + sett.count + '" data-text="' + self.options.text + '" data-via="' + sett.via + '" data-hashtags="' + sett.hashtags + '" data-related="' + sett.related + '" data-lang="' + sett.lang + '">Tweet</a></div>');
-        var loading = 0;
-        if (typeof twttr === 'undefined' && loading == 0) {
-          loading = 1;
-          (function() {
-            var twitterScriptTag = document.createElement('script');
-            twitterScriptTag.type = 'text/javascript';
-            twitterScriptTag.async = true;
-            twitterScriptTag.src = '//platform.twitter.com/widgets.js';
-            var s = document.getElementsByTagName('script')[0];
-            s.parentNode.insertBefore(twitterScriptTag, s);
-          })();
-        } else {
-          $.ajax({
-            url: '//platform.twitter.com/widgets.js',
-            dataType: 'script',
-            cache: true
-          }); //http://stackoverflow.com/q/6536108
-        }
-      },
-      digg: function(self) {
-        var sett = self.options.buttons.digg;
-        $(self.element).find('.buttons').append('<div class="button digg"><a class="DiggThisButton ' + sett.type + '" rel="nofollow external" href="http://digg.com/submit?url=' + encodeURIComponent((sett.url !== '' ? sett.url : self.options.url)) + '"></a></div>');
-        var loading = 0;
-        if (typeof __DBW === 'undefined' && loading == 0) {
-          loading = 1;
-          (function() {
-            var s = document.createElement('SCRIPT'),
-              s1 = document.getElementsByTagName('SCRIPT')[0];
-            s.type = 'text/javascript';
-            s.async = true;
-            s.src = '//widgets.digg.com/buttons.js';
-            s1.parentNode.insertBefore(s, s1);
-          })();
-        }
-      },
-      delicious: function(self) {
-        if (self.options.buttons.delicious.size == 'tall') { //tall
-          var css = 'width:50px;',
-            cssCount = 'height:35px;width:50px;font-size:15px;line-height:35px;',
-            cssShare = 'height:18px;line-height:18px;margin-top:3px;';
-        } else { //medium
-          var css = 'width:93px;',
-            cssCount = 'float:right;padding:0 3px;height:20px;width:26px;line-height:20px;',
-            cssShare = 'float:left;height:20px;line-height:20px;';
-        }
-        var count = self.shorterTotal(self.options.count.delicious);
-        if (typeof count === "undefined") {
-          count = 0;
-        }
-        $(self.element).find('.buttons').append(
-          '<div class="button delicious"><div style="' + css + 'font:12px Arial,Helvetica,sans-serif;cursor:pointer;color:#666666;display:inline-block;float:none;height:20px;line-height:normal;margin:0;padding:0;text-indent:0;vertical-align:baseline;">' +
-          '<div style="' + cssCount + 'background-color:#fff;margin-bottom:5px;overflow:hidden;text-align:center;border:1px solid #ccc;border-radius:3px;">' + count + '</div>' +
-          '<div style="' + cssShare + 'display:block;padding:0;text-align:center;text-decoration:none;width:50px;background-color:#7EACEE;border:1px solid #40679C;border-radius:3px;color:#fff;">' +
-          '<img src="http://www.delicious.com/static/img/delicious.small.gif" height="10" width="10" alt="Delicious" /> Add</div></div></div>');
-
-        $(self.element).find('.delicious').on('click', function() {
-          self.openPopup('delicious');
-        });
-      },
-      stumbleupon: function(self) {
-        var sett = self.options.buttons.stumbleupon;
-        $(self.element).find('.buttons').append('<div class="button stumbleupon"><su:badge layout="' + sett.layout + '" location="' + (sett.url !== '' ? sett.url : self.options.url) + '"></su:badge></div>');
-        var loading = 0;
-        if (typeof STMBLPN === 'undefined' && loading == 0) {
-          loading = 1;
-          (function() {
-            var li = document.createElement('script');
-            li.type = 'text/javascript';
-            li.async = true;
-            li.src = '//platform.stumbleupon.com/1/widgets.js';
-            var s = document.getElementsByTagName('script')[0];
-            s.parentNode.insertBefore(li, s);
-          })();
-          s = window.setTimeout(function() {
-            if (typeof STMBLPN !== 'undefined') {
-              STMBLPN.processWidgets();
-              clearInterval(s);
-            }
-          }, 500);
-        } else {
-          STMBLPN.processWidgets();
-        }
-      },
-      linkedin: function(self) {
-        var sett = self.options.buttons.linkedin;
-        $(self.element).find('.buttons').append('<div class="button linkedin"><script type="in/share" data-url="' + (sett.url !== '' ? sett.url : self.options.url) + '" data-counter="' + sett.counter + '"></script></div>');
-        var loading = 0;
-        if (typeof window.IN === 'undefined' && loading == 0) {
-          loading = 1;
-          (function() {
-            var li = document.createElement('script');
-            li.type = 'text/javascript';
-            li.async = true;
-            li.src = '//platform.linkedin.com/in.js';
-            var s = document.getElementsByTagName('script')[0];
-            s.parentNode.insertBefore(li, s);
-          })();
-        } else {
-          window.IN.init();
-        }
-      },
-      pinterest: function(self) {
-        var sett = self.options.buttons.pinterest;
-        $(self.element).find('.buttons').append('<div class="button pinterest"><a href="http://pinterest.com/pin/create/button/?url=' + (sett.url !== '' ? sett.url : self.options.url) + '&media=' + sett.media + '&description=' + sett.description + '" class="pin-it-button" count-layout="' + sett.layout + '">Pin It</a></div>');
-
-        (function() {
-          var li = document.createElement('script');
-          li.type = 'text/javascript';
-          li.async = true;
-          li.src = '//assets.pinterest.com/js/pinit.js';
-          var s = document.getElementsByTagName('script')[0];
-          s.parentNode.insertBefore(li, s);
-        })();
-      }
-    },
-    /* Tracking for Google Analytics
-    ================================================== */
-    tracking = {
-      googlePlus: function() {},
-      facebook: function() {
-        //console.log('facebook');
-        fb = window.setInterval(function() {
-          if (typeof FB !== 'undefined') {
-            FB.Event.subscribe('edge.create', function(targetUrl) {
-              _gaq.push(['_trackSocial', 'facebook', 'like', targetUrl]);
-            });
-            FB.Event.subscribe('edge.remove', function(targetUrl) {
-              _gaq.push(['_trackSocial', 'facebook', 'unlike', targetUrl]);
-            });
-            FB.Event.subscribe('message.send', function(targetUrl) {
-              _gaq.push(['_trackSocial', 'facebook', 'send', targetUrl]);
-            });
-            //console.log('ok');
-            clearInterval(fb);
-          }
-        }, 1000);
-      },
-      twitter: function() {
-        //console.log('twitter');
-        tw = window.setInterval(function() {
-          if (typeof twttr !== 'undefined') {
-            twttr.events.bind('tweet', function(event) {
-              if (event) {
-                _gaq.push(['_trackSocial', 'twitter', 'tweet']);
-              }
-            });
-            //console.log('ok');
-            clearInterval(tw);
-          }
-        }, 1000);
-      },
-      digg: function() {
-        //if somenone find a solution, mail me !
-        /*$(this.element).find('.digg').on('click', function(){
-          _gaq.push(['_trackSocial', 'digg', 'add']);
-        });*/
-      },
-      delicious: function() {},
-      stumbleupon: function() {},
-      linkedin: function() {
-        function LinkedInShare() {
-          _gaq.push(['_trackSocial', 'linkedin', 'share']);
-        }
-      },
-      pinterest: function() {
-        //if somenone find a solution, mail me !
-      }
-    },
-    /* Popup for each social network
-    ================================================== */
-    popup = {
-      googlePlus: function(opt) {
-        window.open("https://plus.google.com/share?hl=" + opt.buttons.googlePlus.lang + "&url=" + encodeURIComponent((opt.buttons.googlePlus.url !== '' ? opt.buttons.googlePlus.url : opt.url)), "", "toolbar=0, status=0, width=900, height=500");
-      },
-      facebook: function(opt) {
-        window.open("http://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent((opt.buttons.facebook.url !== '' ? opt.buttons.facebook.url : opt.url)) + "&t=" + opt.text + "", "", "toolbar=0, status=0, width=900, height=500");
-      },
-      twitter: function(opt) {
-        window.open("https://twitter.com/intent/tweet?text=" + encodeURIComponent(opt.text) + "&url=" + encodeURIComponent((opt.buttons.twitter.url !== '' ? opt.buttons.twitter.url : opt.url)) + (opt.buttons.twitter.via !== '' ? '&via=' + opt.buttons.twitter.via : ''), "", "toolbar=0, status=0, width=650, height=360");
-      },
-      digg: function(opt) {
-        window.open("http://digg.com/tools/diggthis/submit?url=" + encodeURIComponent((opt.buttons.digg.url !== '' ? opt.buttons.digg.url : opt.url)) + "&title=" + opt.text + "&related=true&style=true", "", "toolbar=0, status=0, width=650, height=360");
-      },
-      delicious: function(opt) {
-        window.open('http://www.delicious.com/save?v=5&noui&jump=close&url=' + encodeURIComponent((opt.buttons.delicious.url !== '' ? opt.buttons.delicious.url : opt.url)) + '&title=' + opt.text, 'delicious', 'toolbar=no,width=550,height=550');
-      },
-      stumbleupon: function(opt) {
-        window.open('http://www.stumbleupon.com/badge/?url=' + encodeURIComponent((opt.buttons.stumbleupon.url !== '' ? opt.buttons.stumbleupon.url : opt.url)), 'stumbleupon', 'toolbar=no,width=550,height=550');
-      },
-      linkedin: function(opt) {
-        window.open('https://www.linkedin.com/cws/share?url=' + encodeURIComponent((opt.buttons.linkedin.url !== '' ? opt.buttons.linkedin.url : opt.url)) + '&token=&isFramed=true', 'linkedin', 'toolbar=no,width=550,height=550');
-      },
-      pinterest: function(opt) {
-        window.open('http://pinterest.com/pin/create/button/?url=' + encodeURIComponent((opt.buttons.pinterest.url !== '' ? opt.buttons.pinterest.url : opt.url)) + '&media=' + encodeURIComponent(opt.buttons.pinterest.media) + '&description=' + opt.buttons.pinterest.description, 'pinterest', 'toolbar=no,width=700,height=300');
-      }
-    };
-
-  /* Plugin constructor
-  ================================================== */
-  function Plugin(element, options) {
-    this.element = element;
-
-    this.options = $.extend(true, {}, defaults, options);
-    this.options.share = options.share; //simple solution to allow order of buttons
-
-    this._defaults = defaults;
-    this._name = pluginName;
-
-    this.init();
-  };
-
-  /* Initialization method
-  ================================================== */
-  Plugin.prototype.init = function() {
-    var self = this;
-    if (this.options.urlCurl !== '') {
-      urlJson.googlePlus = this.options.urlCurl + '?url={url}&type=googlePlus'; // PHP script for GooglePlus...
-      urlJson.stumbleupon = this.options.urlCurl + '?url={url}&type=stumbleupon'; // PHP script for Stumbleupon...
-    }
-    $(this.element).addClass(this.options.className); //add class
-
-    //HTML5 Custom data
-    if (typeof $(this.element).data('title') !== 'undefined') {
-      this.options.title = $(this.element).attr('data-title');
-    }
-    if (typeof $(this.element).data('url') !== 'undefined') {
-      this.options.url = $(this.element).data('url');
-    }
-    if (typeof $(this.element).data('text') !== 'undefined') {
-      this.options.text = $(this.element).data('text');
-    }
-
-    //how many social website have been selected
-    $.each(this.options.share, function(name, val) {
-      if (val === true) {
-        self.options.shareTotal++;
-      }
-    });
-
-    if (self.options.enableCounter === true) { //if for some reason you don't need counter
-      //get count of social share that have been selected
-      $.each(this.options.share, function(name, val) {
-        if (val === true) {
-          //self.getSocialJson(name);
-          try {
-            self.getSocialJson(name);
-          } catch (e) {}
-        }
-      });
-    } else if (self.options.template !== '') { //for personalized button (with template)
-      this.options.render(this, this.options);
-    } else { // if you want to use official button like example 3 or 5
-      this.loadButtons();
-    }
-
-    //add hover event
-    $(this.element).hover(function() {
-      //load social button if enable and 1 time
-      if ($(this).find('.buttons').length === 0 && self.options.enableHover === true) {
-        self.loadButtons();
-      }
-      self.options.hover(self, self.options);
-    }, function() {
-      self.options.hide(self, self.options);
-    });
-
-    //click event
-    $(this.element).click(function() {
-      self.options.click(self, self.options);
-      return false;
-    });
-  };
-
-  /* loadButtons methode
-  ================================================== */
-  Plugin.prototype.loadButtons = function() {
-    var self = this;
-    $(this.element).append('<div class="buttons"></div>');
-    $.each(self.options.share, function(name, val) {
-      if (val == true) {
-        loadButton[name](self);
-        if (self.options.enableTracking === true) { //add tracking
-          tracking[name]();
-        }
-      }
-    });
-  };
-
-  /* getSocialJson methode
-  ================================================== */
-  Plugin.prototype.getSocialJson = function(name) {
-    var self = this,
-      count = 0,
-      url = urlJson[name].replace('{url}', encodeURIComponent(this.options.url));
-    if (this.options.buttons[name].urlCount === true && this.options.buttons[name].url !== '') {
-      url = urlJson[name].replace('{url}', this.options.buttons[name].url);
-    }
-    //console.log('name : ' + name + ' - url : '+url); //debug
-    if (url != '' && self.options.urlCurl !== '') { //urlCurl = '' if you don't want to used PHP script but used social button
-      $.getJSON(url, function(json) {
-          if (typeof json.count !== "undefined") { //GooglePlus, Stumbleupon, Twitter, Pinterest and Digg
-            var temp = json.count + '';
-            temp = temp.replace('\u00c2\u00a0', ''); //remove google plus special chars
-            count += parseInt(temp, 10);
-          }
-          //get the FB total count (shares, likes and more)
-          else if (json.data && json.data.length > 0 && typeof json.data[0].total_count !== "undefined") { //Facebook total count
-            count += parseInt(json.data[0].total_count, 10);
-          } else if (typeof json[0] !== "undefined") { //Delicious
-            count += parseInt(json[0].total_posts, 10);
-          } else if (typeof json[0] !== "undefined") { //Stumbleupon
-          }
-          self.options.count[name] = count;
-          self.options.total += count;
-          self.renderer();
-          self.rendererPerso();
-          //console.log(json); //debug
-        })
-        .error(function() {
-          self.options.count[name] = 0;
-          self.rendererPerso();
-        });
-    } else {
-      self.renderer();
-      self.options.count[name] = 0;
-      self.rendererPerso();
-    }
-  };
-
-  /* launch render methode
-  ================================================== */
-  Plugin.prototype.rendererPerso = function() {
-    //check if this is the last social website to launch render
-    var shareCount = 0;
-    for (e in this.options.count) {
-      shareCount++;
-    }
-    if (shareCount === this.options.shareTotal) {
-      this.options.render(this, this.options);
-    }
-  };
-
-  /* render methode
-  ================================================== */
-  Plugin.prototype.renderer = function() {
-    var total = this.options.total,
-      template = this.options.template;
-    if (this.options.shorterTotal === true) { //format number like 1.2k or 5M
-      total = this.shorterTotal(total);
-    }
-
-    if (template !== '') { //if there is a template
-      template = template.replace('{total}', total);
-      $(this.element).html(template);
-    } else { //template by defaults
-      $(this.element).html(
-        '<div class="box"><a class="count" href="#">' + total + '</a>' +
-        (this.options.title !== '' ? '<a class="share" href="#">' + this.options.title + '</a>' : '') +
-        '</div>'
-      );
-    }
-  };
-
-  /* format total numbers like 1.2k or 5M
-  ================================================== */
-  Plugin.prototype.shorterTotal = function(num) {
-    if (num >= 1e6) {
-      num = (num / 1e6).toFixed(2) + "M"
-    } else if (num >= 1e3) {
-      num = (num / 1e3).toFixed(1) + "k"
-    }
-    return num;
-  };
-
-  /* Methode for open popup
-  ================================================== */
-  Plugin.prototype.openPopup = function(site) {
-    popup[site](this.options); //open
-    if (this.options.enableTracking === true) { //tracking!
-      var tracking = {
-        googlePlus: {
-          site: 'Google',
-          action: '+1'
-        },
-        facebook: {
-          site: 'facebook',
-          action: 'like'
-        },
-        twitter: {
-          site: 'twitter',
-          action: 'tweet'
-        },
-        digg: {
-          site: 'digg',
-          action: 'add'
-        },
-        delicious: {
-          site: 'delicious',
-          action: 'add'
-        },
-        stumbleupon: {
-          site: 'stumbleupon',
-          action: 'add'
-        },
-        linkedin: {
-          site: 'linkedin',
-          action: 'share'
-        },
-        pinterest: {
-          site: 'pinterest',
-          action: 'pin'
-        }
-      };
-      _gaq.push(['_trackSocial', tracking[site].site, tracking[site].action]);
-    }
-  };
-
-  /* Methode for add +1 to a counter
-  ================================================== */
-  Plugin.prototype.simulateClick = function() {
-    var html = $(this.element).html();
-    $(this.element).html(html.replace(this.options.total, this.options.total + 1));
-  };
-
-  /* Methode for add +1 to a counter
-  ================================================== */
-  Plugin.prototype.update = function(url, text) {
-    if (url !== '') {
-      this.options.url = url;
-    }
-    if (text !== '') {
-      this.options.text = text;
-    }
-  };
-
-  /* A really lightweight plugin wrapper around the constructor, preventing against multiple instantiations
-  ================================================== */
-  $.fn[pluginName] = function(options) {
-    var args = arguments;
-    if (options === undefined || typeof options === 'object') {
-      return this.each(function() {
-        if (!$.data(this, 'plugin_' + pluginName)) {
-          $.data(this, 'plugin_' + pluginName, new Plugin(this, options));
-        }
-      });
-    } else if (typeof options === 'string' && options[0] !== '_' && options !== 'init') {
-      return this.each(function() {
-        var instance = $.data(this, 'plugin_' + pluginName);
-        if (instance instanceof Plugin && typeof instance[options] === 'function') {
-          instance[options].apply(instance, Array.prototype.slice.call(args, 1));
-        }
-      });
-    }
-  };
-})(jQuery, window, document);
-/*!
 
  =========================================================
  * Material Kit - v2.0.4
@@ -20607,4 +21118,30 @@ var BrowserDetect = {
 };
 
 var better_browser = '<div class="container"><div class="better-browser row"><div class="col-md-2"></div><div class="col-md-8"><h3>We are sorry but it looks like your Browser doesn\'t support our website Features. In order to get the full experience please download a new version of your favourite browser.</h3></div><div class="col-md-2"></div><br><div class="col-md-4"><a href="https://www.mozilla.org/ro/firefox/new/" class="btn btn-warning">Mozilla</a><br></div><div class="col-md-4"><a href="https://www.google.com/chrome/browser/desktop/index.html" class="btn ">Chrome</a><br></div><div class="col-md-4"><a href="http://windows.microsoft.com/en-us/internet-explorer/ie-11-worldwide-languages" class="btn">Internet Explorer</a><br></div><br><br><h4>Thank you!</h4></div></div>';
-alert("hola como estas");
+$(document).ready(function () {
+
+    //$('#alert').hide();
+    $('.btn-delete').click(function (e) {
+        e.preventDefault();
+        if(!confirm("¿Está seguro de eliminar el producto definitivamente?"))
+        {
+            return false;
+        }
+
+        var row =$(this).parents('tr');
+        var form=$(this).parents('form');
+        var url =form.attr('action');
+
+        //$('#alert').show();
+
+        $.post(url,form.serialize(),function (result) {
+            row.fadeOut();
+            $('#products-total').html(result.total);
+            //$('#alert').html(result.message);
+
+            toastr.success().html(result.mensaje);//mensaje
+        }).fail(function () {
+            toastr.error('algo salió mal ')
+        });
+    });
+});

@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css">
   <link rel="stylesheet" href="{{asset('css/material-kit.css')}}" />
   <link rel="stylesheet" href="{{asset('css/demo.css')}}">
+  <link rel="stylesheet" href="{{asset('css/app.css')}}">
 </head>
 
 <body class="@yield('body-class')">
