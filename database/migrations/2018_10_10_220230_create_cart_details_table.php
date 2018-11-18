@@ -25,7 +25,7 @@ class CreateCartDetailsTable extends Migration
 
             //
             $table->integer('quantity');
-            $table->integer('discount'); //descuento en porcentaje %
+            $table->integer('discount')->default(0); //descuento en porcentaje %
 
             $table->timestamps();
         });

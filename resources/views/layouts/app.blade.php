@@ -13,10 +13,11 @@
   <link rel="stylesheet" href="{{asset('css/material-kit.css')}}" />
   <link rel="stylesheet" href="{{asset('css/demo.css')}}">
   <link rel="stylesheet" href="{{asset('css/app.css')}}">
+  @yield('styles')
 </head>
 
 <body class="@yield('body-class')">
-  <nav class="navbar navbar-transparent navbar-color-on-scroll fixed-top navbar-expand-lg" color-on-scroll="100" id="sectionsNav">
+  <nav class="navbar navbar-transparent navbar-color-on-scroll navbar-absolute navbar-expand-lg" color-on-scroll="100" id="sectionsNav">
     <div class="container">
       <div class="navbar-translate">
         <a class="navbar-brand" href="{{ url('/') }}">
@@ -52,6 +53,9 @@
             </a>
 
             <div class="dropdown-menu dropdown-menu-right danger" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" href="{{ url('/home')}}">
+                Dashboard
+              </a>
                 @if(auth()->user()->admin)
                 <a class="dropdown-item" href="{{ url('/admin/products') }}">
                     Gestionar Prodcutos
@@ -81,5 +85,66 @@
 
 
 <script src="{{ asset('js/app.js') }}"></script>
+<script>
+    $('#ModalImage').on('shown.bs.modal', function (event) {
+        //console.log("Esto es un modal")
+        var button =$(event.relatedTarget)
+        var title= button.data('mytitle')
+        var modal =$(this)
+
+        $("#imagendestacada").attr("src",title)
+    })
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+    $('#btnbuscar').click(function () {
+        //alert("hola que tal como te va que frase mas vulgar");
+        var numruc=$('#ruc').val();
+        if (numruc!='')
+        {
+            $.ajax({
+                url:"{{route('consultar.ruc')}}",
+                method:'GET',
+                data:{ruc:numruc},
+                dataType:'json',
+                success:function (data) {
+                    var resultados=data.entidad['success'];
+                    if (resultados==true) {
+                        var razon=data.entidad['entity']['nombre_o_razon_social'];
+                        var direccion=data.entidad['entity']['direccion'];
+                        var distrito=data.entidad['entity']['distrito'];
+                        var provincia=data.entidad['entity']['provincia'];
+                        var departamento=data.entidad['entity']['departamento'];
+                        var estado=data.entidad['entity']['estado_del_contribuyente'];
+
+                        $('#txtruc').val(numruc);
+                        $('#txtrazon').val(razon);
+                        $('#txtestado').val(estado);
+                        $('#txtdireccion').val(direccion);
+                        $('#txtdistrito').val(distrito);
+                        $('#txtprovincia').val(provincia);
+                        $('#txtdepartamento').val(departamento);
+                    }else{
+                        $('#txtruc').val('');
+                        $('#txtrazon').val('');
+                        $('#txtestado').val('');
+                        $('#txtdireccion').val('');
+                        $('#txtdistrito').val('');
+                        $('#txtprovincia').val('');
+                        $('#txtdepartamento').val('');
+                        $('#mensaje').show();
+                        $('#mensaje').delay(2000).hide(2500);
+                    }
+                }
+            });
+        }
+        else
+        {
+            alert("Ingrese RUC");
+            $('#ruc').focus();
+        }
+    });
+    });
+</script>
 
 </html>

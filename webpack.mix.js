@@ -12,9 +12,9 @@ let mix = require('laravel-mix');
  */
 
 mix.scripts([
-    'resources/assets/js/vue.js',
-    'resources/assets/js/axios.js',
-    'resources/assets/js/app.js',
+    //'resources/assets/js/vue.js',
+    //'resources/assets/js/axios.js',
+    //'resources/assets/js/app.js',
     'resources/assets/js/core/jquery.min.js',
     'resources/assets/js/plugins/jquery.sharrre.js',
     'resources/assets/js/toastr.js',

@@ -97,30 +97,33 @@
                     @foreach($images as $image)
                         <div class="col-md-4">
                             <div class="card-deck">
-                                <div class="card">
-                                    <img class="card-img-top" src="{{$image->url}}" alt="Card image cap"  height="320px">
-                                    <form method="post" action="">
-                                        @csrf
-                                        @method('DELETE')
-                                        <input type="hidden" name="image_id" value="{{$image->id}}">
-                                        <button type="submit" class="btn btn-danger btn-block btn-round">
-                                            <i class="material-icons">delete</i> Eliminar imagen</button>
-                                            @if($image->featured)
-                                            <button type="button" rel="tooltip" title="Imagen Destacada"
-                                                    class="btn btn-success btn-block btn-round ">
-                                                <i class="material-icons">favorite</i>
-
-                                            </button>
-                                            @else
-                                            <a href="{{url('admin/products/'.$product->id.'/images/select/'.$image->id)}}"
-                                               class="btn btn-info btn-block btn-round text-white">
-                                                <i class="material-icons">favorite</i> Destacar Imagen
-                                            </a>
-                                            @endif
-                                    </form>
+                                <div class="card" style="">
+                                    <img class="card-img-top" src="{{$image->url}}" alt="Imagen" height="300" width="500">
+                                    <div class="card-body">
+                                        <form method="post" action="">
+                                            @csrf
+                                            @method('DELETE')
+                                            <input type="hidden" name="image_id" value="{{$image->id}}">
+                                            <button type="submit" class="btn btn-danger btn-round btn-sm btn-block">
+                                                <i class="material-icons">delete</i> Eliminar</button>
+                                                @if($image->featured)
+                                                <button type="button" rel="tooltip" title="Imagen Destacada"
+                                                        class="btn  btn-success btn-round btn-sm btn-block">
+                                                    <i class="material-icons">favorite</i>
+                                                            Destacado
+                                                </button>
+                                                @else
+                                                <a href="{{url('admin/products/'.$product->id.'/images/select/'.$image->id)}}"
+                                                   class="btn btn-info  btn-round text-white btn-sm btn-block">
+                                                    <i class="material-icons">favorite</i> Destacar
+                                                </a>
+                                                @endif
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+
                     @endforeach
                 </div>
             </div>

@@ -3,10 +3,14 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use Image;
 use App\Product;
 use App\ProductImage;
 use Illuminate\Http\Request;
 use File;
+use Illuminate\Support\Facades\Auth;
+
+
 
 
 class ImageController extends Controller
@@ -22,21 +26,30 @@ class ImageController extends Controller
     public function store(Request $request,$id)
     {
 
-        //guardar la imagen en nuestro proyecto
-        $file=$request->file('photo');
-        $path=public_path().'/images/products';
-        $filename=uniqid().'.'.$file->getClientOriginalExtension();
+        $this->validate($request,[
+            'photo'=>'required|image'
+        ]);
 
-        $moved=$file->move($path,$filename);
+//        //guardar la imagen en nuestro proyecto usando intervention para darle tamaño a la imagen
+        $extension=$request->file('photo')->getClientOriginalExtension();
+        $filename=uniqid().'.'.$extension;
+
+
+        Image::make($request->file('photo'))
+
+            ->sharpen(5)
+            ->save('images/products/'.$filename);
+
+
+
 
         //Crear un registro en la tabla product image
-        if($moved)
-        {
-            $productImage= new ProductImage();
-            $productImage->image=$filename;
-            $productImage->product_id=$id;
-            $productImage->save();
-        }
+
+        $productImage= new ProductImage();
+        $productImage->image=$filename;
+        $productImage->product_id=$id;
+        $productImage->save();
+
 
         return back();
 
